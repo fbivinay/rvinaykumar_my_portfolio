@@ -46,7 +46,7 @@ export const profile = {
     twitter: "https://x.com/fbi_vinay",
   },
   resumeFile: "/resume.pdf",
-  siteUrl: "https://fbivinay.vercel.app", // update after deploy
+  siteUrl: "https://rvinaykumar-my-portfolio.vercel.app",
 } as const;
 
 /* ── Skills (Resume tables ∪ LinkedIn Skills.csv, de-duplicated) ── */
