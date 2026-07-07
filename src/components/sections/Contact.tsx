@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import {
-  Check, Copy, Github, Linkedin, Mail, MapPin, Phone, Twitter,
+  Check, Copy, Github, Linkedin, Mail, MapPin, Phone,
 } from "lucide-react";
 import { profile } from "@/lib/data";
 import Reveal from "@/components/ui/Reveal";
@@ -21,7 +21,6 @@ export default function Contact() {
   const socials = [
     { href: profile.socials.github, label: "GitHub", icon: <Github size={17} aria-hidden /> },
     { href: profile.socials.linkedin, label: "LinkedIn", icon: <Linkedin size={17} aria-hidden /> },
-    { href: profile.socials.twitter, label: "X / Twitter", icon: <Twitter size={17} aria-hidden /> },
   ];
 
   return (

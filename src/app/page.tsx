@@ -7,7 +7,6 @@ import CustomCursor from "@/components/fx/CustomCursor";
 import ScrollProgress from "@/components/fx/ScrollProgress";
 import Navbar from "@/components/layout/Navbar";
 import CommandPalette from "@/components/layout/CommandPalette";
-import Footer from "@/components/layout/Footer";
 import Hero from "@/components/sections/Hero";
 import Skills from "@/components/sections/Skills";
 import Experience from "@/components/sections/Experience";
@@ -55,7 +54,6 @@ export default function Home() {
         <Credentials />
         <Contact />
       </main>
-      <Footer />
     </>
   );
 }
