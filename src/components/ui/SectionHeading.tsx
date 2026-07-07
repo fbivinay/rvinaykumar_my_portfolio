@@ -38,7 +38,7 @@ export default function SectionHeading({
       className="mb-10 sm:mb-14"
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, margin: "0px 0px -8% 0px" }}
+      viewport={{ once: false, margin: "0px 0px -8% 0px" }}
       variants={{ show: { transition: { staggerChildren: 0.12 } } }}
     >
       <motion.p

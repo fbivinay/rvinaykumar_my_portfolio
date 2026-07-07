@@ -43,14 +43,14 @@ export default function Experience() {
                 aria-hidden
                 initial={reduced ? false : { scale: 0, opacity: 0 }}
                 whileInView={{ scale: 1, opacity: 1 }}
-                viewport={{ once: true, margin: "0px 0px -8% 0px" }}
+                viewport={{ once: false, margin: "0px 0px -8% 0px" }}
                 transition={{ delay: 0.2, duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
                 className="absolute -left-[7px] top-8 h-3.5 w-3.5 rounded-full border-2 border-accent bg-base shadow-glow sm:left-1/2 sm:-translate-x-1/2"
               />
               <motion.article
                 initial={reduced ? false : { opacity: 0, x: left ? -72 : 72, scale: 0.96, filter: "blur(10px)" }}
                 whileInView={{ opacity: 1, x: 0, scale: 1, filter: "blur(0px)" }}
-                viewport={{ once: true, margin: "0px 0px -8% 0px" }}
+                viewport={{ once: false, margin: "0px 0px -8% 0px" }}
                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                 className={`card-lift ml-6 rounded-xl border border-line bg-surface p-6 sm:ml-0 sm:w-[calc(50%-2.5rem)] ${
                   left ? "" : "sm:ml-auto"
@@ -59,7 +59,7 @@ export default function Experience() {
                 <motion.p
                   initial={reduced ? false : { opacity: 0, y: 8 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: false }}
                   transition={{ delay: 0.25, duration: 0.5 }}
                   className="eyebrow mb-2"
                 >
