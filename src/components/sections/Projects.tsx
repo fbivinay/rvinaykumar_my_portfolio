@@ -48,7 +48,7 @@ function ProjectCard({
   onOpen: () => void;
 }) {
   return (
-    <Reveal delay={index * 0.08}>
+    <Reveal delay={index * 0.12}>
       <motion.button
         layoutId={`card-${p.id}`}
         onClick={onOpen}
@@ -231,7 +231,7 @@ export default function Projects() {
   const openProject = projects.find((p) => p.id === openId);
 
   return (
-    <section id="projects" aria-label="Projects" className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
+    <section id="projects" aria-label="Projects" className="mx-auto max-w-6xl px-6 py-16 sm:py-24 lg:py-32">
       <SectionHeading
         eyebrow="Featured Titles"
         title="Projects"

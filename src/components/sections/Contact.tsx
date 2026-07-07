@@ -25,7 +25,7 @@ export default function Contact() {
   ];
 
   return (
-    <section id="contact" aria-label="Contact" className="relative mx-auto max-w-6xl px-6 py-24 sm:py-32">
+    <section id="contact" aria-label="Contact" className="relative mx-auto max-w-6xl px-6 py-16 sm:py-24 lg:py-32">
       <div
         aria-hidden
         className="animate-drift absolute bottom-0 left-1/2 -z-10 h-[50vh] w-[70vw] -translate-x-1/2 rounded-full bg-accent/[0.07] blur-[120px]"

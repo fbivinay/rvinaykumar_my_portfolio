@@ -128,6 +128,9 @@ html.custom-cursor * {
   transform: translateY(-6px) scale(1.02);
   box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.9), 0 0 40px -12px var(--glow);
 }
+[data-theme="light"] .card-lift:hover {
+  box-shadow: 0 24px 55px -24px rgba(0, 0, 0, 0.28), 0 0 44px -10px var(--glow);
+}
 
 /* Respect reduced motion globally — kill all animation/transition noise */
 @media (prefers-reduced-motion: reduce) {

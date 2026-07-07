@@ -49,8 +49,11 @@ function ParticleField() {
 
     const draw = () => {
       ctx.clearRect(0, 0, w, h);
+      // Theme-aware: white dust on the dark stage, ink dust with a
+      // stronger red key light when the lights are on.
+      const light = document.documentElement.getAttribute("data-theme") === "light";
       const grad = ctx.createRadialGradient(mx, my, 0, mx, my, 380);
-      grad.addColorStop(0, "rgba(229,9,20,0.10)");
+      grad.addColorStop(0, light ? "rgba(229,9,20,0.14)" : "rgba(229,9,20,0.10)");
       grad.addColorStop(1, "rgba(229,9,20,0)");
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, w, h);
@@ -66,7 +69,9 @@ function ParticleField() {
         ctx.arc(p.x, p.y, p.r + near * 1.2, 0, Math.PI * 2);
         ctx.fillStyle = near > 0.05
           ? `rgba(229,9,20,${p.a + near * 0.5})`
-          : `rgba(255,255,255,${p.a * 0.5})`;
+          : light
+            ? `rgba(20,20,20,${p.a * 0.45})`
+            : `rgba(255,255,255,${p.a * 0.5})`;
         ctx.fill();
       }
       raf = requestAnimationFrame(draw);
@@ -140,7 +145,7 @@ export default function Hero({ started }: { started: boolean }) {
       {started && (
         <motion.div
           style={{ y, opacity }}
-          className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-10 px-6 py-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:py-0"
+          className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-8 px-6 pb-20 pt-28 sm:gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:py-0"
         >
           {/* ── LEFT: text column ── */}
           <div className="order-2 text-center lg:order-1 lg:text-left">
@@ -182,15 +187,11 @@ export default function Hero({ started }: { started: boolean }) {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.3, duration: 0.7 }}
-              className="mx-auto mt-4 max-w-xl text-pretty text-sm leading-relaxed sm:text-base lg:mx-0"
+              className="mx-auto mt-4 max-w-xl text-pretty text-sm leading-relaxed text-ink opacity-90 sm:text-base lg:mx-0"
             >
-               <span className="font-semibold text-ink">
-                {profile.subHeadline}
-                </span>{" "}
-              <span className="text-ink">
-                — building end-to-end ML pipelines, IoT-based real-time analytics, and
-                  dashboards that turn raw data into clear answers.
-              </span>
+              <span className="font-semibold text-ink">{profile.subHeadline}</span>{" "}
+              — building end-to-end ML pipelines, IoT-based real-time analytics, and
+              dashboards that turn raw data into clear answers.
             </motion.p>
 
             {/* CTAs */}

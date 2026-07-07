@@ -132,7 +132,7 @@ function SkillSphere() {
 export default function Skills() {
   const marqueeItems = [...sphereSkills, ...sphereSkills];
   return (
-    <section id="skills" aria-label="Skills" className="relative py-24 sm:py-32">
+    <section id="skills" aria-label="Skills" className="relative py-16 sm:py-24 lg:py-32">
       <div className="mx-auto max-w-6xl px-6">
         <SectionHeading
           eyebrow="Genres"
