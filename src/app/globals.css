@@ -2,84 +2,141 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Theme tokens ─────────────────────────────────────────────
-   Light is the default. Dark applies only via [data-theme="dark"]. */
-:root {
-  --bg: 255 255 255;
-  --ink: 24 24 27;      /* zinc-900 */
-  --gray: 113 113 122;  /* zinc-500 */
-  --faint: 161 161 170; /* zinc-400 */
-  --line: 228 228 231;  /* zinc-200 */
-  --accent: 196 59 47;  /* muted vermilion, used sparingly */
-  --wash: 250 250 250;  /* zinc-50, hover wash */
+/* ───────────────────────── Theme tokens ─────────────────────────
+   Dark (default) is the Netflix cinema. Light is the "lights on"
+   variant — same red, inverted stage. Persisted via data-theme.  */
+:root,
+[data-theme="light"] {
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --raised: #f1f1f1;
+  --ink: #0a0a0a;
+  --mute: #555555;
+  --line: rgba(0, 0, 0, 0.09);
+  --glow: rgba(229, 9, 20, 0.25);
+  color-scheme: light;
 }
 
 [data-theme="dark"] {
-  --bg: 10 10 10;
-  --ink: 244 244 245;
-  --gray: 161 161 170;
-  --faint: 113 113 122;
-  --line: 39 39 42;
-  --accent: 235 94 82;
-  --wash: 24 24 27;
-}
-
-* {
-  border-color: rgb(var(--line));
+  --bg: #000000;
+  --surface: #111111;
+  --raised: #1a1a1a;
+  --ink: #ffffff;
+  --mute: #b3b3b3;
+  --line: rgba(255, 255, 255, 0.08);
+  --glow: rgba(229, 9, 20, 0.4);
+  color-scheme: dark;
 }
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5rem;
+  scroll-padding-top: 88px;
 }
 
 body {
-  background: rgb(var(--bg));
-  color: rgb(var(--ink));
-  -webkit-font-smoothing: antialiased;
+  background: var(--bg);
+  color: var(--ink);
+  font-feature-settings: "cv02", "cv03", "cv11";
   text-rendering: optimizeLegibility;
-  font-feature-settings: "cv11", "ss01";
-  transition: background-color 0.35s ease, color 0.35s ease;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 ::selection {
-  background: rgb(var(--ink));
-  color: rgb(var(--bg));
+  background: #e50914;
+  color: #fff;
 }
 
-/* ── Page-load rise: one orchestrated stagger, nothing after ── */
-@keyframes rise {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* Thin cinematic scrollbar */
+::-webkit-scrollbar { width: 9px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 99px;
+  border: 2px solid var(--bg);
 }
-.rise {
-  opacity: 0;
-  animation: rise 0.75s cubic-bezier(0.21, 0.47, 0.32, 0.98) forwards;
-  animation-delay: calc(var(--i, 0) * 90ms);
+::-webkit-scrollbar-thumb:hover { background: #e50914; }
+
+/* Film-grain noise overlay — sits above everything, never intercepts */
+.noise::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Underline that draws in on hover — the only recurring flourish */
-.u-link {
-  background-image: linear-gradient(rgb(var(--ink)), rgb(var(--ink)));
-  background-size: 0% 1px;
-  background-position: 0 100%;
-  background-repeat: no-repeat;
-  transition: background-size 0.3s ease, color 0.2s ease;
-  padding-bottom: 1px;
+/* Faint background grid used in section backdrops */
+.bg-grid {
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 75%);
 }
-.u-link:hover { background-size: 100% 1px; }
 
+/* Eyebrow label — the utility type role */
+.eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #e50914;
+}
+
+/* Netflix-style focus ring for keyboard users */
 :focus-visible {
-  outline: 2px solid rgb(var(--accent));
+  outline: 2px solid #e50914;
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
+/* Hide native cursor only when the custom cursor is active */
+html.custom-cursor,
+html.custom-cursor * {
+  cursor: none !important;
+}
+
+/* Infinite marquee */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 36s linear infinite;
+}
+.marquee-mask {
+  mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+}
+
+/* Slow ambient gradient drift (hero / footer glows) */
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(4%, -6%) scale(1.08); }
+}
+.animate-drift { animation: drift 14s ease-in-out infinite; }
+
+/* Shared-element style card hover lift */
+.card-lift {
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.card-lift:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.9), 0 0 40px -12px var(--glow);
+}
+
+/* Respect reduced motion globally — kill all animation/transition noise */
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .rise { animation: none; opacity: 1; transform: none; }
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
