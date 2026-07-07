@@ -12,6 +12,11 @@ import { cn } from "@/lib/utils";
  * behavior). Links get an animated red underline; the resume CTA is
  * always one click away.
  */
+const externalLinks = [
+  { href: "https://www.linkedin.com/in/r-vinay-kumar-139938215", label: "LinkedIn" },
+  { href: "https://github.com/fbivinay", label: "GitHub" },
+];
+
 export default function Navbar({ onOpenPalette }: { onOpenPalette: () => void }) {
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
@@ -70,6 +75,19 @@ export default function Navbar({ onOpenPalette }: { onOpenPalette: () => void })
             <li key={l.href}>
               <a
                 href={l.href}
+                className="group relative py-2 text-[13px] font-medium text-mute transition-colors hover:text-ink"
+              >
+                {l.label}
+                <span className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-accent transition-transform duration-300 ease-netflix group-hover:scale-x-100" />
+              </a>
+            </li>
+          ))}
+          {externalLinks.map((l) => (
+            <li key={l.href}>
+              <a
+                href={l.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group relative py-2 text-[13px] font-medium text-mute transition-colors hover:text-ink"
               >
                 {l.label}
@@ -141,6 +159,19 @@ export default function Navbar({ onOpenPalette }: { onOpenPalette: () => void })
                     {l.label}
                   </a>
                 </motion.li>
+              ))}
+              {externalLinks.map((l) => (
+                <li key={l.href}>
+                  <a
+                    href={l.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setOpen(false)}
+                    className="block rounded-md px-3 py-2.5 text-sm font-medium text-mute transition-colors hover:bg-white/5 hover:text-ink"
+                  >
+                    {l.label}
+                  </a>
+                </li>
               ))}
               <li>
                 <a
