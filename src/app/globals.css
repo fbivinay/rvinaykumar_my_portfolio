@@ -29,6 +29,7 @@
 }
 
 html {
+  overflow-x: clip;
   scroll-behavior: smooth;
   scroll-padding-top: 88px;
 }
@@ -39,7 +40,11 @@ body {
   font-feature-settings: "cv02", "cv03", "cv11";
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main {
+  overflow-x: clip;
 }
 
 ::selection {

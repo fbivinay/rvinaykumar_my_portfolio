@@ -6,11 +6,13 @@ import { Briefcase, MapPin } from "lucide-react";
 import { experience } from "@/lib/data";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
-import { usePrefersReducedMotion } from "@/lib/hooks";
+import { useMediaQuery, usePrefersReducedMotion } from "@/lib/hooks";
 
 /** Vertical timeline — cards slide in from alternating sides on scroll. */
 export default function Experience() {
   const reduced = usePrefersReducedMotion();
+  const isDesktop = useMediaQuery("(min-width: 640px)");
+  const slide = isDesktop ? 72 : 32;
   const listRef = useRef<HTMLOListElement>(null);
   const { scrollYProgress } = useScroll({
     target: listRef,
@@ -48,7 +50,7 @@ export default function Experience() {
                 className="absolute -left-[7px] top-8 h-3.5 w-3.5 rounded-full border-2 border-accent bg-base shadow-glow sm:left-1/2 sm:-translate-x-1/2"
               />
               <motion.article
-                initial={reduced ? false : { opacity: 0, x: left ? -72 : 72, scale: 0.96, filter: "blur(10px)" }}
+                initial={reduced ? false : { opacity: 0, x: left ? -slide : slide, scale: 0.96, filter: "blur(10px)" }}
                 whileInView={{ opacity: 1, x: 0, scale: 1, filter: "blur(0px)" }}
                 viewport={{ once: false, margin: "0px 0px -8% 0px" }}
                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
