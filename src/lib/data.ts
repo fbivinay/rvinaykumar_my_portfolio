@@ -29,7 +29,6 @@ export const profile = {
   ],
   location: "Bengaluru, Karnataka, India",
   email: "rvinaykumar6924@gmail.com",
-  phone: "+91 86181 87642",
   // From resume professional summary
   summary:
     "Results-driven MSc Big Data Analytics student with a strong foundation in statistical modelling, machine learning, and data-driven system design. Demonstrated ability to independently build end-to-end ML pipelines (94% accuracy) and architect IoT-based real-time analytics frameworks. Experienced with Python, R, SQL, and leading ML/cloud platforms.",

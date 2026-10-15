@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import {
-  Check, Copy, Github, Linkedin, Mail, MapPin, Phone,
+  Check, Copy, Github, Linkedin, Mail, MapPin,
 } from "lucide-react";
 import { profile } from "@/lib/data";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
 
-/** Direct contact channels — email, phone, location, socials. */
+/** Direct contact channels — email, location, socials. */
 export default function Contact() {
   const [copied, setCopied] = useState(false);
 
@@ -63,20 +63,6 @@ export default function Contact() {
           <Reveal delay={0.08}>
             <div className="flex items-center gap-3 rounded-xl border border-line bg-surface p-5">
               <span className="grid h-10 w-10 place-items-center rounded-lg bg-accent/10 text-accent">
-                <Phone size={17} aria-hidden />
-              </span>
-              <div>
-                <span className="block text-[11px] uppercase tracking-wider text-mute">Phone</span>
-                <a href={`tel:${profile.phone.replace(/\s/g, "")}`} className="text-sm font-semibold text-ink hover:text-accent">
-                  {profile.phone}
-                </a>
-              </div>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.16}>
-            <div className="flex items-center gap-3 rounded-xl border border-line bg-surface p-5">
-              <span className="grid h-10 w-10 place-items-center rounded-lg bg-accent/10 text-accent">
                 <MapPin size={17} aria-hidden />
               </span>
               <div>
@@ -86,7 +72,7 @@ export default function Contact() {
             </div>
           </Reveal>
 
-          <Reveal delay={0.24}>
+          <Reveal delay={0.16}>
             <div className="flex gap-3 pt-2">
               {socials.map((s) => (
                 <a

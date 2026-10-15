@@ -1,5 +1,9 @@
 # R Vinay Kumar — Cinematic Portfolio
 
+**Live:** https://rvinaykumar-my-portfolio.vercel.app (laptop or desktop only)
+
+![The portfolio's opening screen](docs/screenshot.jpg)
+
 A Netflix-grade personal portfolio: pure-black stage, `#E50914` accent, cinematic intro, buttery 60fps motion, and every fact sourced from real data (resume, LinkedIn export, GitHub account export). Fully static, ~173 KB first-load JS.
 
 **Stack:** Next.js 15 · React 19 · TypeScript · Tailwind CSS · Framer Motion · Lenis · Lucide
