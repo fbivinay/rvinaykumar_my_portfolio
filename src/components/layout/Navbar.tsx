@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useScroll } from "framer-motion";
-import { Command, Download, Menu, X } from "lucide-react";
+import { Download, Menu, Search, X } from "lucide-react";
 import { navLinks, profile } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -99,11 +99,11 @@ export default function Navbar({
         <div className="col-start-3 flex items-center gap-1.5 justify-self-end">
           <button
             onClick={onOpenPalette}
-            aria-label="Open command palette (Ctrl+K)"
-            className="hidden items-center gap-2 rounded-md border border-line bg-white/5 px-3 py-2 text-xs text-mute transition-colors hover:border-accent/50 hover:text-ink sm:flex"
+            aria-label="Search (Ctrl+K)"
+            title="Search (Ctrl+K)"
+            className="hidden h-8 w-8 place-items-center rounded-md border border-line bg-white/5 text-mute transition-colors hover:border-accent/50 hover:text-ink sm:grid"
           >
-            <Command size={13} aria-hidden />
-            <span className="font-mono">K</span>
+            <Search size={15} aria-hidden />
           </button>
           <a
             href={profile.resumeFile}
