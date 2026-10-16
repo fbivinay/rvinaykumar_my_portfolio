@@ -1,21 +1,20 @@
 "use client";
 
-import {
-  ArrowLeft, ArrowRight, CalendarDays, CloudRain, History, Maximize2, Percent, Tag,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Maximize2, Search, ShoppingCart, Star } from "lucide-react";
 import { Cursor, easeOut, Loop, prog, useLoop, type CursorKey } from "../kit";
 
 /* mom-lab-finals.vercel.app, presented: the cover's barcode turning into a
-   sales chart, a jump to the AI/ML chapter, one build step, then the demand
-   forecasting scene answering "how much should we order?". Drawn on the
-   deck's own 1600-wide stage (1rem = 16px) and scaled into the laptop. */
+   sales chart, a jump to the Data section, then its customer journey built
+   stage by stage (Search, View, Compare, Add to cart) while the event log
+   records each step. Drawn on the deck's own 1600-wide stage (1rem = 16px)
+   and scaled into the laptop. */
 
-const LENGTH = 17800;
+const LENGTH = 15500;
 const STAGE = { w: 1600, h: 947, scale: 1024 / 1600 };
 const C = {
   bg: "#f5f4f0", surface: "#fbfaf7", fg: "#171a17", fg2: "#474b46", fg3: "#6b6f69", line: "#dfddd6",
   line2: "#c9c6be", accent: "#1d6a44", accentInk: "#165536", wash: "#e0ebe3", signal: "#e2703a",
-  signalInk: "#b04f1d", neg: "#b8432b", mute: "#b3afa6",
+  signalInk: "#b04f1d", neg: "#b8432b", mute: "#b3afa6", bg2: "#eceae4",
 };
 const MONO = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
 
@@ -44,48 +43,37 @@ const chart = BAR.map((_, i) => ({ x: X0 + i * slot + (slot - 11) / 2, w: 11, h:
 const trend = chart.map((c, i) => `${i ? "L" : "M"}${(c.x + c.w / 2).toFixed(1)} ${(BASE - c.h - 14).toFixed(1)}`).join(" ");
 const lerp = (a: number, b: number, p: number) => a + (b - a) * p;
 
-/* ── AI/ML chapter opener (slides/aiml.tsx) ── */
-const YEAR = [7400, 7900, 8600, 9300, 8800, 8200, 7900, 8300, 8900, 9600, 9200, 10000];
-const hY = (v: number) => (v / 12000) * 330;
-
-/* ── Demand forecasting (slides/aiml.tsx) ── */
-const WEEKS = [14200, 14800, 15100, 14600, 15500, 16100, 15800, 16400, 16900, 16300, 17000, 17600, 17200, 17900, 18100, 17700];
-const FORECAST = 18400, LOW = 17200, HIGH = 19600;
-const fy = (v: number) => 640 - ((v - 12000) / 14000) * 340;
-const fx = (i: number) => 670 + (i * (1440 - 650 - 140)) / (WEEKS.length - 1);
-const FX = fx(WEEKS.length - 1) + 90;
-const weeksPath = WEEKS.map((v, i) => `${i ? "L" : "M"}${fx(i)} ${fy(v)}`).join(" ");
-const INPUTS = [
-  { label: "Historical sales", Icon: History, d: "M0 22 L10 18 L20 20 L30 12 L40 14 L50 6" },
-  { label: "Price", Icon: Tag, d: "M0 8 H18 V18 H34 V10 H50" },
-  { label: "Promotions", Icon: Percent, d: "M0 20 H12 V6 H20 V20 H36 V6 H44 V20 H50" },
-  { label: "Seasonality", Icon: CalendarDays, d: "M0 14 C8 2 17 2 25 14 S42 26 50 14" },
-  { label: "Weather", Icon: CloudRain, d: "M0 18 L10 16 L20 19 L30 6 L40 9 L50 17" },
+/* ── Customer journey, the Data section's first scene (slides/data.tsx) ── */
+const STAGES = ["Search", "View", "Compare", "Add to cart", "Abandon", "Return", "Purchase", "Review"];
+const EVENTS: [string, string, string][] = [
+  ["Thu 18:02", "search", "“running shoes”"],
+  ["Thu 18:03", "product_view", "trail runner · 48 s"],
+  ["Thu 18:05", "compare", "2 shoes side by side"],
+  ["Thu 18:06", "add_to_cart", "size UK 9"],
 ];
-const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
+const stageX = (i: number) => 100 + i * 200; // stage dot centres (left 88 + 12 + i/7 × 1400)
 
 /* Scene changes, in loop time */
-const TO_INTRO = 4600; // curtain into the AI/ML chapter
-const STEP = 7000; // → reveals the build
-const TO_FORECAST = 8800; // rise into demand forecasting
-const ORDERS: [number, number][] = [[0, 18400], [12000, 14000], [13600, 24000], [15200, 18400]];
+const TO_DATA = 4600; // curtain into the Data section
+const BUILDS = [TO_DATA, 7600, 9600, 11600]; // Search, then clicks on View, Compare, Add to cart
 
 const s = (v: number) => v * STAGE.scale; // stage px → canvas px for the cursor
 const KEYS: CursorKey[] = [
   [0, 700, 260],
   [3200, 420, 470],
-  [4300, s(612), s(764), 1], // 03 AI/ML
-  [5000, s(612), s(764)],
+  [4300, s(348), s(762), 1], // 02 Data
+  [5000, s(348), s(762)],
   [6400, 640, 330],
-  [8200, s(222), s(903)],
-  [8500, s(222), s(903), 1], // third dot: Demand forecasting
-  [9000, s(222), s(903)],
-  [11500, 448, 525],
-  [12000, 448, 525, 1], // 14,000
-  [13600, 561, 525, 1], // 24,000
-  [15200, 504, 525, 1], // 18,400
-  [15700, 504, 525],
-  [16600, 760, 260],
+  [7300, s(stageX(1)), s(738)],
+  [7600, s(stageX(1)), s(738), 1], // View
+  [8400, s(stageX(1)), s(738)],
+  [9300, s(stageX(2)), s(738)],
+  [9600, s(stageX(2)), s(738), 1], // Compare
+  [10400, s(stageX(2)), s(738)],
+  [11300, s(stageX(3)), s(738)],
+  [11600, s(stageX(3)), s(738), 1], // Add to cart
+  [12300, s(stageX(3)), s(738)],
+  [13600, 760, 260],
 ];
 
 /** Headline words rising out of a mask, like AnimatedHeadline. */
@@ -168,7 +156,7 @@ function Cover({ t }: { t: number }) {
         {SECTIONS.map(([n, label, title], i) => (
           <div key={n} style={{ paddingTop: 18, paddingRight: 24, ...fadeIn(t, 1000 + i * 80, 600, 14) }}>
             <p style={{ fontFamily: MONO, fontSize: 15, color: C.accent }}>{n}</p>
-            <p style={{ marginTop: 6, fontSize: 20, fontWeight: 560, letterSpacing: "-0.015em", color: n === "03" && t >= 3900 ? C.accentInk : C.fg }}>{label}</p>
+            <p style={{ marginTop: 6, fontSize: 20, fontWeight: 560, letterSpacing: "-0.015em", color: n === "02" && t >= 3900 ? C.accentInk : C.fg }}>{label}</p>
             <p style={{ marginTop: 6, fontSize: 15, lineHeight: 1.35, color: C.fg3 }}>{title}</p>
           </div>
         ))}
@@ -177,157 +165,173 @@ function Cover({ t }: { t: number }) {
   );
 }
 
-function Intro({ t }: { t: number }) {
-  const at = TO_INTRO + 200;
-  const step = t >= STEP;
-  const lastX = 20 + 11 * 37;
-  const nextX = lastX + 120;
-  const ask = prog(t, STEP, STEP + 600);
+/** The Data section's customer journey: the shop, the event log and the stage buttons. */
+function Journey({ t }: { t: number }) {
+  const at = TO_DATA + 200;
+  const step = BUILDS.filter((when) => t >= when).length - 1;
+  const inCart = step >= 3;
+  const typing = prog(t, at + 1150, at + 2050); // "running shoes" types itself in
+  const moved = easeOut(prog(t, BUILDS[step], BUILDS[step] + 600));
+  const progress = step ? lerp(step - 1, step, moved) / (STAGES.length - 1) : 0;
+  const panel: React.CSSProperties = { position: "absolute", top: 260, height: 440, overflow: "hidden", background: C.surface, border: `1px solid ${C.line}`, borderRadius: 20 };
+  const compare = easeOut(prog(t, BUILDS[2], BUILDS[2] + 500)) * (1 - prog(t, BUILDS[3], BUILDS[3] + 300));
+
   return (
     <>
-      <div style={{ position: "absolute", left: 88, top: 132, width: 736 }}>
-        <p style={{ display: "flex", gap: 12, fontSize: 20, ...fadeIn(t, at + 150, 500, 10) }}>
-          <span style={{ fontFamily: MONO, color: C.accent }}>03</span>
-          <span style={{ color: C.fg2 }}>AI/ML</span>
+      <div style={{ position: "absolute", left: 88, top: 116, width: 1024 }}>
+        <p style={{ marginBottom: 10, fontSize: 20, fontWeight: 560, color: C.accentInk, ...fadeIn(t, at + 100, 500, 8) }}>Customer journey</p>
+        <p style={{ fontSize: 44, fontWeight: 580, lineHeight: 1.02, letterSpacing: "-0.035em", color: C.fg, ...fadeIn(t, at + 200, 700) }}>
+          A customer who doesn&apos;t buy can still generate valuable data.
         </p>
-        <Rise text="From What Happened? to What Happens Next?" t={t} at={at + 300} style={{ marginTop: 20, fontSize: 68, fontWeight: 600, lineHeight: 0.98, letterSpacing: "-0.045em", color: C.fg }} />
-        <div style={{ marginTop: 36, fontSize: 26, lineHeight: 1.42, letterSpacing: "-0.012em", color: C.fg2 }}>
-          <p style={fadeIn(t, at + 800, 600)}>A traditional report can tell a retailer that 10,000 products were sold last month.</p>
-          <p style={{ marginTop: 16, opacity: ask, transform: `translateY(${(1 - ask) * 14}px)` }}>
-            Machine learning asks a much more valuable question:{" "}
-            <span
+      </div>
+
+      {/* The shop */}
+      <div style={{ ...panel, left: 88, width: 672, ...fadeIn(t, at + 350, 700, 20) }}>
+        <div style={{ display: "flex", height: 60, alignItems: "center", gap: 12, borderBottom: `1px solid ${C.line}`, padding: "0 20px" }}>
+          <div style={{ display: "flex", height: 38, flex: 1, alignItems: "center", gap: 10, borderRadius: 999, background: C.bg2, padding: "0 16px", fontSize: 17, color: C.fg }}>
+            <Search size={17} color={C.fg3} />
+            <span style={{ clipPath: `inset(0 ${(1 - typing) * 100}% 0 0)` }}>running shoes</span>
+            {step === 0 && <span style={{ marginLeft: -6, width: 1, height: 18, background: C.fg, opacity: Math.floor(t / 500) % 2 }} />}
+          </div>
+          <span style={{ position: "relative", display: "grid" }}>
+            <ShoppingCart size={24} color={C.fg2} />
+            {inCart && (
+              <span
+                style={{
+                  position: "absolute", right: -9, top: -9, display: "grid", placeItems: "center", width: 20, height: 20, borderRadius: 999,
+                  background: C.signal, color: "#fff", fontFamily: MONO, fontSize: 12, transform: `scale(${easeOut(prog(t, BUILDS[3], BUILDS[3] + 300))})`,
+                }}
+              >
+                1
+              </span>
+            )}
+          </span>
+        </div>
+        <div style={{ display: "grid", height: 380, gridTemplateColumns: "1.15fr 1fr" }}>
+          <div style={{ position: "relative", display: "grid", placeItems: "center", overflow: "hidden" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/demos/shoe-runner.webp"
+              alt=""
               style={{
-                color: C.fg,
-                backgroundImage: `linear-gradient(${C.wash}, ${C.wash})`,
-                backgroundRepeat: "no-repeat",
-                backgroundSize: `${easeOut(prog(t, STEP + 500, STEP + 1300)) * 100}% 100%`,
+                width: "112%", maxWidth: "none", mixBlendMode: "multiply",
+                maskImage: "radial-gradient(ellipse at center, black 45%, transparent 72%)",
+                WebkitMaskImage: "radial-gradient(ellipse at center, black 45%, transparent 72%)",
+                opacity: step >= 1 ? lerp(0.4, 1, easeOut(prog(t, BUILDS[1], BUILDS[1] + 600))) : 0.4 * easeOut(prog(t, at + 400, at + 1300)),
+                transform: `rotate(-4deg) scale(${lerp(0.92, 1, easeOut(prog(t, at + 400, at + 1300)))})`,
+              }}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 14, paddingRight: 24 }}>
+            <div>
+              <p style={{ fontSize: 28, fontWeight: 600, letterSpacing: "-0.03em", color: C.fg }}>Trail runner</p>
+              <p style={{ marginTop: 3, fontSize: 22, color: C.fg2 }}>₹4,999</p>
+            </div>
+            <div style={{ display: "flex", gap: 3 }}>
+              {[0, 1, 2, 3, 4].map((i) => (
+                <Star key={i} size={21} color={C.line2} />
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: 6 }}>
+              {["7", "8", "9", "10"].map((size) => {
+                const picked = inCart && size === "9";
+                return (
+                  <span
+                    key={size}
+                    style={{
+                      display: "grid", placeItems: "center", height: 35, width: 51, borderRadius: 10, fontSize: 15,
+                      border: `1px solid ${picked ? C.fg : C.line2}`, background: picked ? C.fg : "transparent", color: picked ? C.bg : C.fg2,
+                    }}
+                  >
+                    UK {size}
+                  </span>
+                );
+              })}
+            </div>
+            <div
+              style={{
+                display: "flex", height: 46, alignItems: "center", justifyContent: "center", borderRadius: 999, fontSize: 17, fontWeight: 540,
+                transition: "background-color .5s, color .5s", border: `1px solid ${C.fg}`, background: inCart ? C.fg : "transparent", color: inCart ? C.bg : C.fg,
               }}
             >
-              how many are we likely to sell next month?
-            </span>
-          </p>
-        </div>
-      </div>
-      <svg viewBox="0 0 632 576" style={{ position: "absolute", left: 880, top: 160, width: 632, height: 576, overflow: "visible" }}>
-        <line x1={0} x2={632} y1={470.5} y2={470.5} stroke={C.line2} />
-        {YEAR.map((v, i) => {
-          const p = easeOut(prog(t, at + 700 + i * 50, at + 1500 + i * 50));
-          return <rect key={i} x={20 + i * 37} width={26} rx={4} y={470 - hY(v) * p} height={hY(v) * p} fill={i === 11 ? C.fg : C.mute} />;
-        })}
-        <g opacity={prog(t, at + 1600, at + 2000)}>
-          <text x={lastX + 13} y={470 - hY(10000) - 52} textAnchor="end" fontSize={15} fontFamily={MONO} fill={C.fg3}>last month</text>
-          <text x={lastX + 13} y={470 - hY(10000) - 20} textAnchor="end" fontSize={30} fontWeight={600} fill={C.fg}>10,000 sold</text>
-        </g>
-        <rect x={nextX} y={140} width={36} height={330} rx={6} fill="none" stroke={C.fg3} strokeWidth={2} strokeDasharray="6 7" opacity={prog(t, at + 2000, at + 2500) * (1 - 0.75 * ask)} />
-        <text x={nextX + 18} y={320} textAnchor="middle" fontSize={64} fontWeight={600} fill={C.signal} opacity={step ? 1 - ask : prog(t, at + 2200, at + 2700)}>?</text>
-        <path d={`M${lastX + 13} ${470 - hY(10000)} L${nextX + 20} ${470 - hY(11800)} L${nextX + 20} ${470 - hY(9100)} Z`} fill={C.accent} fillOpacity={0.2 * ask} />
-        <path d={`M${lastX + 13} ${470 - hY(10000)} L${nextX + 20} ${470 - hY(10500)}`} stroke={C.accent} strokeWidth={2.5} strokeDasharray="7 6" fill="none" opacity={ask} />
-        <g opacity={ask}>
-          <circle cx={nextX + 20} cy={470 - hY(10500)} r={6} fill={C.accent} stroke={C.bg} strokeWidth={3} />
-          <text x={632} y={502} textAnchor="end" fontSize={15} fontFamily={MONO} fill={C.accentInk}>next month: likely range</text>
-        </g>
-        <text x={20} y={502} fontSize={15} fontFamily={MONO} fill={C.fg3}>a year ago</text>
-      </svg>
-    </>
-  );
-}
-
-function Forecast({ t }: { t: number }) {
-  const at = TO_FORECAST + 100;
-  const stock = [...ORDERS].reverse().find(([when]) => t >= when)![1];
-  const short = Math.max(0, FORECAST - stock);
-  const excess = Math.max(0, stock - FORECAST);
-  const verdict = short
-    ? { color: C.neg, title: "Too little stock", body: `Lost sales: about ${fmt(short)} units of demand nobody can buy.` }
-    : excess
-      ? { color: C.signalInk, title: "Too much stock", body: `Excess inventory: about ${fmt(excess)} units tying up cash and space.` }
-      : { color: C.accentInk, title: "Stock matches the forecast", body: "Fewer lost sales and less waste, as long as the forecast holds." };
-  const lastChange = [...ORDERS].reverse().find(([when]) => t >= when)![0];
-  const moved = easeOut(prog(t, lastChange, lastChange + 600));
-  const prevStock = ORDERS[Math.max(0, ORDERS.findIndex(([w]) => w === lastChange) - 1)][1];
-  const shown = lerp(prevStock, stock, moved);
-  const line = easeOut(prog(t, at + 800, at + 2200));
-  const later = prog(t, at + 2100, at + 2500);
-  const counter = easeOut(prog(t, at + 2200, at + 3600));
-
-  return (
-    <>
-      <Rise text="Forecast demand before it arrives." t={t} at={at + 100} style={{ position: "absolute", left: 88, top: 116, width: 960, fontSize: 52, fontWeight: 580, lineHeight: 1.02, letterSpacing: "-0.035em", color: C.fg }} />
-      <div style={{ position: "absolute", right: 88, top: 116, textAlign: "right", ...fadeIn(t, at + 2200, 500, 10) }}>
-        <p style={{ fontFamily: MONO, fontSize: 15, color: C.fg3 }}>Expected demand next week</p>
-        <p style={{ marginTop: 3, fontSize: 60, fontWeight: 640, lineHeight: 1, letterSpacing: "-0.045em", color: C.accent }}>
-          {fmt(FORECAST * counter)} <span style={{ fontSize: 28, letterSpacing: "-0.02em", color: C.fg2 }}>units</span>
-        </p>
-        <p style={{ marginTop: 6, fontSize: 15, color: C.fg3 }}>Example only: likely range 17,200–19,600</p>
-      </div>
-      <div style={{ position: "absolute", left: 88, top: 280, width: 432 }}>
-        {INPUTS.map(({ label, Icon, d }, i) => (
-          <div key={label} style={fadeIn(t, at + 400 + i * 120, 500, 0)}>
-            {i > 0 && <p style={{ padding: "2px 0 2px 18px", fontFamily: MONO, fontSize: 16, color: C.fg3 }}>+</p>}
-            <div style={{ display: "flex", alignItems: "center", gap: 14, border: `1px solid ${C.line}`, background: C.surface, borderRadius: 14, padding: "11px 16px" }}>
-              <Icon size={20} color={C.fg3} />
-              <span style={{ flex: 1, fontSize: 18, color: C.fg }}>{label}</span>
-              <svg viewBox="0 0 50 28" width={48} height={26}>
-                <path d={d} fill="none" stroke={C.fg2} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              {inCart ? "In your cart" : "Add to cart"}
             </div>
           </div>
-        ))}
-      </div>
-      <svg viewBox="0 0 1600 900" style={{ position: "absolute", left: 0, top: 0, width: 1600, height: 900 }}>
-        {[14000, 18000, 22000, 26000].map((g) => (
-          <g key={g}>
-            <line x1={650} x2={1440} y1={fy(g)} y2={fy(g)} stroke={C.line} />
-            <text x={640} y={fy(g) + 5} textAnchor="end" fontSize={14} fontFamily={MONO} fill={C.fg3}>{g / 1000}k</text>
-          </g>
-        ))}
-        <path d="M500 288 H516 V630 H500" fill="none" stroke={C.line2} strokeWidth={2} opacity={prog(t, at + 1000, at + 1600)} />
-        <path d="M516 459 C570 459 590 500 640 500" fill="none" stroke={C.line2} strokeWidth={2} />
-        {[0, 1, 2].map((k) => {
-          const p = ((t - at - 1400) / 1600 + k / 3) % 1;
-          return t > at + 1400 ? <circle key={k} r={4.5} fill={C.accent} cx={lerp(516, 640, p)} cy={459 + 41 * p * p * (3 - 2 * p)} opacity={Math.sin(p * Math.PI)} /> : null;
-        })}
-        <path d={weeksPath} fill="none" stroke={C.fg} strokeWidth={2.5} strokeLinejoin="round" pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - line} />
-        <g opacity={later}>
-          <line x1={fx(15) + 45} x2={fx(15) + 45} y1={290} y2={640} stroke={C.fg3} />
-          <text x={fx(15) + 45} y={282} textAnchor="middle" fontSize={14} fontFamily={MONO} fill={C.fg3}>today</text>
-          <path d={`M${fx(15)} ${fy(WEEKS[15])} L${FX} ${fy(FORECAST)}`} stroke={C.accent} strokeWidth={2.5} strokeDasharray="7 6" />
-          <line x1={FX} x2={FX} y1={fy(HIGH)} y2={fy(LOW)} stroke={C.accent} strokeWidth={10} strokeLinecap="round" opacity={0.25} />
-          <circle cx={FX} cy={fy(FORECAST)} r={8} fill={C.accent} stroke={C.bg} strokeWidth={3} />
-          <rect x={FX - 40} width={80} y={Math.min(fy(shown), fy(FORECAST))} height={Math.abs(fy(shown) - fy(FORECAST))} fill={shown < FORECAST ? C.neg : C.signal} fillOpacity={0.2} />
-          <line x1={FX - 40} x2={FX + 40} y1={fy(shown)} y2={fy(shown)} stroke={short ? C.neg : excess ? C.signal : C.fg} strokeWidth={3} />
-          <text x={FX + 50} y={fy(shown) + 5} fontSize={15} fontFamily={MONO} fill={C.fg2}>order {fmt(stock)}</text>
-        </g>
-        <text x={650} y={670} fontSize={14} fontFamily={MONO} fill={C.fg3}>16 weeks ago</text>
-      </svg>
-      <div style={{ position: "absolute", left: 650, right: 88, bottom: 104, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 32 }}>
-        <div>
-          <p style={{ fontFamily: MONO, fontSize: 15, color: C.fg3, marginBottom: 8 }}>How much should we order?</p>
-          <div style={{ display: "flex", border: `1px solid ${C.line2}`, background: C.surface, borderRadius: 999, padding: 4 }}>
-            {[14000, 18400, 24000].map((o) => (
-              <span key={o} style={{ borderRadius: 999, padding: "6px 18px", fontFamily: MONO, fontSize: 16, ...(o === stock ? { background: C.fg, color: C.bg } : { color: C.fg2 }) }}>
-                {fmt(o)}
-              </span>
-            ))}
+        </div>
+        {compare > 0 && (
+          <div
+            style={{
+              position: "absolute", left: 20, bottom: 20, display: "flex", width: 272, alignItems: "center", gap: 12, padding: 10,
+              background: C.surface, border: `1px solid ${C.line}`, borderRadius: 20, boxShadow: "0 18px 40px -20px rgba(0,0,0,0.35)",
+              opacity: compare, transform: `translateX(${(1 - compare) * -30}px)`,
+            }}
+          >
+            <div style={{ height: 64, width: 80, flexShrink: 0, overflow: "hidden", borderRadius: 10, background: "#e9e9e7" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/demos/shoe-airmax.webp" alt="" style={{ height: "100%", width: "100%", objectFit: "cover" }} />
+            </div>
+            <div>
+              <p style={{ fontFamily: MONO, fontSize: 12, color: C.fg3 }}>comparing with</p>
+              <p style={{ fontSize: 16, fontWeight: 560, color: C.fg }}>Road runner</p>
+              <p style={{ fontSize: 15, color: C.fg2 }}>₹5,499</p>
+            </div>
           </div>
+        )}
+      </div>
+
+      {/* What the retailer records, one event per stage */}
+      <div style={{ ...panel, left: 784, width: 728, display: "flex", flexDirection: "column", ...fadeIn(t, at + 500, 700, 20) }}>
+        <div style={{ display: "flex", height: 60, alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${C.line}`, padding: "0 20px" }}>
+          <span style={{ fontSize: 18, fontWeight: 560, color: C.fg }}>Data the retailer records</span>
+          <span style={{ fontFamily: MONO, fontSize: 15, color: C.fg3 }}>{step + 1} events</span>
         </div>
-        <div key={verdict.title} style={{ maxWidth: 448, ...fadeIn(t, lastChange || at, 300, 10) }}>
-          <p style={{ fontSize: 22, fontWeight: 600, letterSpacing: "-0.02em", color: verdict.color }}>{verdict.title}</p>
-          <p style={{ marginTop: 3, fontSize: 17, lineHeight: 1.4, color: C.fg2 }}>{verdict.body}</p>
+        <div style={{ padding: "6px 8px" }}>
+          {EVENTS.slice(0, step + 1).map(([time, name, detail], i) => {
+            const from = i ? BUILDS[i] : at + 900;
+            const p = easeOut(prog(t, from, from + 450));
+            return (
+              <div
+                key={name}
+                style={{
+                  display: "grid", gridTemplateColumns: "96px 184px 1fr", alignItems: "center", borderRadius: 10, padding: "8px 12px", fontFamily: MONO, fontSize: 15,
+                  opacity: p, transform: `translateY(${(1 - p) * 12}px)`, background: i === step ? C.wash : "transparent", transition: "background-color .45s",
+                }}
+              >
+                <span style={{ color: C.fg3 }}>{time}</span>
+                <span style={{ color: C.fg }}>{name}</span>
+                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: C.fg2 }}>{detail}</span>
+              </div>
+            );
+          })}
         </div>
+      </div>
+
+      {/* Journey stages: each one is a button on the real slide */}
+      <div style={{ position: "absolute", left: 88, right: 88, top: 726, height: 64, ...fadeIn(t, at + 600, 600, 10) }}>
+        <div style={{ position: "absolute", left: 12, right: 12, top: 12, height: 2, background: C.line }} />
+        <div style={{ position: "absolute", left: 12, right: 12, top: 12, height: 2, background: C.accent, transformOrigin: "left", transform: `scaleX(${progress})` }} />
+        {STAGES.map((stage, i) => (
+          <div key={stage} style={{ position: "absolute", top: 0, left: stageX(i) - 88, transform: "translateX(-50%)", display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+            <span
+              style={{
+                display: "block", width: 24, height: 24, borderRadius: 999, border: "2px solid", transition: "all .3s",
+                borderColor: i === step ? C.accent : i < step ? C.fg3 : C.line2, background: i === step ? C.accent : i < step ? C.fg3 : C.bg,
+              }}
+            />
+            <span style={{ whiteSpace: "nowrap", fontSize: 16, fontWeight: i === step ? 580 : 400, color: i === step ? C.fg : C.fg3 }}>{stage}</span>
+          </div>
+        ))}
       </div>
     </>
   );
 }
 
 export default function RetailDeckDemo() {
-  const t = useLoop(LENGTH, 14400);
-  const scene = t >= TO_FORECAST ? 2 : t >= TO_INTRO ? 1 : 0;
-  const index = [0, 13, 15][scene];
-  const curtain = easeOut(prog(t, TO_INTRO, TO_INTRO + 900));
-  const rise = easeOut(prog(t, TO_FORECAST, TO_FORECAST + 750));
-  const step = scene === 1 && t >= STEP;
-  const key = t >= STEP && t < STEP + 700;
+  const t = useLoop(LENGTH, 13500);
+  const data = t >= TO_DATA;
+  const step = BUILDS.filter((when) => t >= when).length - 1;
+  const index = data ? 9 : 0; // the customer journey is slide 10 of 33
+  const curtain = easeOut(prog(t, TO_DATA, TO_DATA + 900));
 
   const layer: React.CSSProperties = { position: "absolute", inset: 0, background: C.bg };
 
@@ -335,25 +339,20 @@ export default function RetailDeckDemo() {
     <Loop t={t} length={LENGTH}>
       <div style={{ position: "absolute", left: 0, top: 0, width: STAGE.w, height: STAGE.h, transform: `scale(${STAGE.scale})`, transformOrigin: "0 0", background: C.bg, color: C.fg, overflow: "hidden" }}>
         {/* scenes */}
-        {t < TO_INTRO + 900 && (
+        {t < TO_DATA + 900 && (
           <div style={layer}>
             <Cover t={t} />
           </div>
         )}
-        {t >= TO_INTRO && t < TO_FORECAST + 750 && (
-          <div style={{ ...layer, clipPath: `inset(${(1 - curtain) * 100}% 0% 0% 0%)`, transform: `translateY(${-2 * rise}%) scale(${1 - 0.015 * rise})` }}>
-            <Intro t={t} />
-          </div>
-        )}
-        {t >= TO_FORECAST && (
-          <div style={{ ...layer, opacity: rise, transform: `translateY(${5 * (1 - rise)}%)` }}>
-            <Forecast t={t} />
+        {data && (
+          <div style={{ ...layer, clipPath: `inset(${(1 - curtain) * 100}% 0% 0% 0%)` }}>
+            <Journey t={t} />
           </div>
         )}
 
         {/* progress line */}
         <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: 3, background: "rgba(223,221,214,0.6)" }}>
-          <div style={{ height: "100%", width: `${(index / 32) * 100}%`, background: C.accent, transition: "width .7s cubic-bezier(.22,1,.36,1)" }} />
+          <div style={{ height: "100%", width: `${((index + (data ? step / 8 : 0)) / 32) * 100}%`, background: C.accent, transition: "width .7s cubic-bezier(.22,1,.36,1)" }} />
         </div>
 
         {/* header */}
@@ -368,14 +367,14 @@ export default function RetailDeckDemo() {
           </span>
           <nav style={{ display: "flex", gap: 36 }}>
             {SECTIONS.map(([n, label]) => {
-              const on = scene > 0 && n === "03";
+              const on = data && n === "02";
               return (
                 <span key={n} style={{ position: "relative", display: "flex", alignItems: "baseline", gap: 8, padding: "14px 0", fontSize: 17, letterSpacing: "-0.01em" }}>
                   <span style={{ fontFamily: MONO, fontSize: 13, color: on ? C.accent : C.fg3 }}>{n}</span>
                   <span style={{ color: on ? C.fg : C.fg3 }}>{label}</span>
                   {on && (
                     <span style={{ position: "absolute", left: 0, right: 0, bottom: 4, height: 2, borderRadius: 2, background: C.line2, overflow: "hidden" }}>
-                      <span style={{ display: "block", height: "100%", width: scene === 1 ? "16.7%" : "50%", background: C.accent, transition: "width .6s" }} />
+                      <span style={{ display: "block", height: "100%", width: "25%", background: C.accent }} />
                     </span>
                   )}
                 </span>
@@ -395,46 +394,33 @@ export default function RetailDeckDemo() {
         {/* footer */}
         <footer style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 88, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 88px" }}>
           <span style={{ display: "flex", alignItems: "center", gap: 20 }}>
-            <span style={{ display: "grid", placeItems: "center", width: 44, height: 44, borderRadius: 999, border: `1px solid ${C.line2}`, color: C.fg2, opacity: scene === 0 ? 0.35 : 1 }}>
+            <span style={{ display: "grid", placeItems: "center", width: 44, height: 44, borderRadius: 999, border: `1px solid ${C.line2}`, color: C.fg2, opacity: data ? 1 : 0.35 }}>
               <ArrowLeft size={18} />
             </span>
-            {scene > 0 && (
+            {data && (
               <>
                 <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  {[0, 1, 2, 3, 4, 5].map((d) => {
-                    const on = d === (scene === 1 ? 0 : 2);
-                    return (
-                      <span key={d} style={{ display: "grid", placeItems: "center", height: 24, width: on ? 32 : 12 }}>
-                        <i style={{ display: "block", height: 8, width: on ? "100%" : 8, borderRadius: 99, background: on ? C.accent : d < (scene === 1 ? 0 : 2) ? C.fg3 : C.line2 }} />
-                      </span>
-                    );
-                  })}
+                  {[0, 1, 2, 3].map((d) => (
+                    <span key={d} style={{ display: "grid", placeItems: "center", height: 24, width: d === 0 ? 32 : 12 }}>
+                      <i style={{ display: "block", height: 8, width: d === 0 ? "100%" : 8, borderRadius: 99, background: d === 0 ? C.accent : C.line2 }} />
+                    </span>
+                  ))}
                 </span>
                 <span style={{ fontSize: 17, color: C.fg2 }}>
-                  <b style={{ marginRight: 10, fontFamily: MONO, fontSize: 15, fontWeight: 500, color: C.fg }}>{scene === 1 ? "01" : "03"}</b>
-                  {scene === 1 ? "What happens next?" : "Demand forecasting"}
+                  <b style={{ marginRight: 10, fontFamily: MONO, fontSize: 15, fontWeight: 500, color: C.fg }}>01</b>
+                  The customer journey
                 </span>
               </>
             )}
           </span>
           <span style={{ display: "flex", alignItems: "center", gap: 20 }}>
-            {scene === 1 && <span style={{ fontFamily: MONO, fontSize: 14, color: C.fg3 }}>{step ? "2/2" : "1/2"}</span>}
-            <span style={{ fontSize: 17, color: C.fg2 }}>
-              {scene === 0 ? "From data to decision" : scene === 1 ? (step ? "Reporting vs prediction" : "Machine learning asks…") : "Recommendation systems"}
-            </span>
-            <span style={{ display: "grid", placeItems: "center", width: 56, height: 56, borderRadius: 999, background: C.fg, color: C.bg, transform: `scale(${key ? 0.94 : 1})` }}>
+            {data && <span style={{ fontFamily: MONO, fontSize: 14, color: C.fg3 }}>{step + 1}/8</span>}
+            <span style={{ fontSize: 17, color: C.fg2 }}>{data ? STAGES[step + 1] : "From data to decision"}</span>
+            <span style={{ display: "grid", placeItems: "center", width: 56, height: 56, borderRadius: 999, background: C.fg, color: C.bg }}>
               <ArrowRight size={20} />
             </span>
           </span>
         </footer>
-      </div>
-
-      {/* the keystroke, as screen recorders show it */}
-      <div
-        className="absolute bottom-[86px] left-1/2 grid h-11 min-w-11 -translate-x-1/2 place-items-center rounded-lg bg-black/75 px-3 text-[20px] font-semibold text-white shadow-lg"
-        style={{ opacity: key ? 1 - prog(t, STEP + 450, STEP + 700) : 0 }}
-      >
-        →
       </div>
 
       <Cursor t={t} keys={KEYS} />

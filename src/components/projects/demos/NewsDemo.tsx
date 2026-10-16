@@ -1,200 +1,301 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Cursor, easeOut, Loop, prog, useLoop, type CursorKey } from "../kit";
 
-/* ai-tech-news-alpha.vercel.app: the billboard top story, the ranked Trending
-   Now rail, a card's AI summary on hover, and the click-out notice. Stories
-   are from the live feed; cards use the site's own no-image placeholder. */
+/* ai-tech-news-alpha.vercel.app in a 1280-wide window: the billboard top story,
+   the ranked Trending Now rail, a card's AI summary on hover and the click-out
+   notice. Stories are from the live feed (16 Oct 2026). Images load the way the
+   site loads them: through its image optimiser, then the publisher's own URL,
+   then the site's lettered placeholder. */
 
 const RED = "#e50914";
 const LENGTH = 13000;
+const ZOOM = 0.8; // the site at 1280px wide, fitted into the 1024px screen
+const SITE = "https://ai-tech-news-alpha.vercel.app";
+const FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"; // the site's own stack
 
-const TOP = {
-  title: "Anthropic cofounder renews call for robust regulation of frontier AI",
-  summary:
-    "Concerns about AI guardrails have soared after models developed by OpenAI and Anthropic were involved in security incidents during testing, piling on pressure to regulate the technology.",
-  source: "Economic Times Tech",
-  ago: "1 hour ago",
-  tags: ["Policy & Regulation", "OpenAI", "Anthropic"],
+const optimised = (url: string, w: 480 | 1600) => `${SITE}/_vercel/image?url=${encodeURIComponent(url)}&w=${w}&q=75`;
+
+type Story = { title: string; summary: string; source: string; domain: string; ago: string; tags: string[]; image: string };
+
+const TOP: Story = {
+  title: "Tesla unveils long-delayed Roadster developed with SpaceX, fueling merger speculation",
+  summary: "Elon Musk first debuted the Roadster refresh concept in 2017 but Tesla has since missed every targeted delivery date.",
+  source: "CNBC Technology",
+  domain: "www.cnbc.com",
+  ago: "just now",
+  tags: ["Startups & Funding", "Tesla", "SpaceX"],
+  image: "https://image.cnbcfm.com/api/v1/image/108419270-1792151092525-108419270-1792150895998-screenshot_2026-10-15_at_60952___pm.jpg?v=1792151098&w=1920&h=1080",
 };
 
-const TRENDING = [
+const TRENDING: Story[] = [
   {
-    title: "New York City pension fund asks Anthropic to delay IPO",
-    source: "Economic Times Tech",
-    ago: "7 hours ago",
-    tags: ["Startups & Funding", "Anthropic"],
-    summary:
-      "The supervisor of New York City's pension funds, one of the largest in the United States, asked Anthropic to postpone its stock market debut until risks posed by its artificial intelligence technology are better controlled.",
+    title: "iPhone Duo orders are already delayed into 2027",
+    summary: "Delivery estimates for the iPhone Duo slipped into next year in less than an hour after Apple opened preorders for it at 8AM ET on Friday.",
+    source: "The Verge",
+    domain: "www.theverge.com",
+    ago: "33 min ago",
+    tags: ["Consumer Tech", "Apple"],
+    image: "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/apple-event-september-2026-452-10-57-30.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100",
   },
   {
-    title: "Tesla Debuts 2026 Roadster, an EV Sports Car at Least $200,000",
-    source: "NYT Technology",
-    ago: "2 hours ago",
-    tags: ["Tech", "Tesla"],
-    summary:
-      "Elon Musk’s company and other automakers, like Jaguar and Bentley, are trying to sell very expensive electric cars to people who usually prefer gasoline-fueled luxury and performance.",
+    title: "Steam Achievement Sets will stop DLCs from ruining your 100 percent record",
+    summary: "Steam has launched Achievement Sets in beta.",
+    source: "Engadget",
+    domain: "www.engadget.com",
+    ago: "1 hour ago",
+    tags: ["Tech"],
+    image: "https://www.engadget.com/img/gallery/steam-achievement-sets-will-stop-dlcs-from-ruining-your-100-percent-record/l-intro-1792151622.jpg",
   },
   {
-    title: "Urban Company board approves plan to raise Rs 2,500 crore via QIP",
-    source: "Economic Times Tech",
-    ago: "24 minutes ago",
-    tags: ["Startups & Funding", "Urban Company"],
+    title: "Nvidia’s RTX Spark laptops are built to run AI agents locally",
     summary:
-      "Urban Company raised Rs 472 crore through its initial public offering (IPO) in September last year.",
+      "Nvidia’s RTX Spark laptops, which launched on Friday, are built to run AI agents on the laptop itself. Users can install agents such as GitHub Copilot, Hermes, OpenClaw and Perplexity from the first start-up, without a command line, Nvidia said.",
+    source: "The Next Web",
+    domain: "thenextweb.com",
+    ago: "39 min ago",
+    tags: ["AI Models", "Microsoft"],
+    image: "https://media.thenextweb.com/2026/10/nvidia-rtx-spark-laptops-transparent-chassis-render.avif",
+  },
+  {
+    title: "Anthropic gives METR inside access to audit its AI models and safety practices",
+    summary: "Anthropic has given a team from the nonprofit METR inside access to review its AI models and safety practices, the company announced.",
+    source: "The Decoder",
+    domain: "the-decoder.com",
+    ago: "31 min ago",
+    tags: ["Tech", "Anthropic"],
+    image: "https://the-decoder.com/wp-content/uploads/2025/11/Anthropic-Cybersecurity.png",
   },
 ];
 
-const CHIPS = ["Top Story", "Trending Now", "AI Models", "Tech", "Startups & Funding", "Policy & Regulation", "Security", "Hardware & Chips"];
+const CHIPS = ["Top Story", "Trending Now", "AI Models", "Tech", "Startups & Funding", "Policy & Regulation", "Security", "Hardware & Chips", "Consumer Tech"];
+const HOVERED = 2; // the Nvidia story
 
+/** Cursor keys are in screen (1024-wide) coordinates, measured on the rendered page. */
 const KEYS: CursorKey[] = [
   [0, 760, 330],
-  [1800, 420, 300],
-  [3300, 640, 470],
-  [4600, 640, 430],
-  [6200, 470, 330], // hover the Tesla story
-  [8100, 470, 330],
-  [8300, 470, 330, 1], // open it
-  [8800, 470, 330],
+  [1800, 300, 300], // over the top story's headline
+  [3300, 520, 420],
+  [4600, 600, 430],
+  [6200, 764, 441], // hover the Nvidia story
+  [8100, 764, 441],
+  [8300, 764, 441, 1], // open it
+  [8800, 764, 441],
   [10200, 760, 250],
 ];
 
-function Source({ name }: { name: string }) {
-  const nyt = name.startsWith("NYT");
+/** A story image: the optimiser first, then the publisher's URL, then the placeholder. */
+function StoryImage({ story, width }: { story: Story; width: 480 | 1600 }) {
+  const [src, setSrc] = useState(() => optimised(story.image, width));
+  const [failed, setFailed] = useState(false);
+  if (failed)
+    return (
+      <div
+        className="grid h-full w-full place-items-center"
+        style={{ background: "radial-gradient(400px 200px at 80% -30%, rgba(229,9,20,0.14), transparent 65%), linear-gradient(135deg,#f0f0f2,#f6f6f7)" }}
+      >
+        <span className="text-[44px] font-black text-[#8c8c8e]">{story.source[0]}</span>
+      </div>
+    );
   return (
-    <span className="flex items-center gap-1.5 text-[12.5px]">
-      <i className={`grid h-[18px] w-[18px] place-items-center rounded-[4px] text-[9px] font-bold not-italic ${nyt ? "bg-[#ececee] text-[#111]" : "bg-[#d71920] text-white"}`}>
-        {nyt ? "T" : "ET"}
-      </i>
-      <b className="font-bold text-[#4d4d4f]">{name}</b>
-    </span>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt=""
+      referrerPolicy="no-referrer"
+      onError={() => (src === story.image ? setFailed(true) : setSrc(story.image))}
+      className="h-full w-full object-cover"
+    />
+  );
+}
+
+function Meta({ story }: { story: Story }) {
+  const [logo, setLogo] = useState(true);
+  return (
+    <p className="flex items-center gap-[7px] text-[12.5px] text-[#8c8c8e]">
+      {logo && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={`https://www.google.com/s2/favicons?domain=${story.domain}&sz=64`}
+          alt=""
+          width={16}
+          height={16}
+          onError={() => setLogo(false)}
+          className="h-4 w-4 rounded-[4px]"
+        />
+      )}
+      <b className="font-bold text-[#4d4d4f]">{story.source}</b>
+      <span>·</span>
+      <span>{story.ago}</span>
+    </p>
   );
 }
 
 function Tags({ tags }: { tags: string[] }) {
   return (
-    <span className="flex gap-1.5 text-[12px]">
+    <p className="flex flex-wrap gap-1.5">
       {tags.map((g, i) => (
-        <i key={g} className="rounded-md px-2 py-0.5 not-italic" style={i === 0 ? { color: RED, background: "rgba(229,9,20,0.08)" } : { color: "#4d4d4f", background: "#f0f0f1" }}>
+        <span
+          key={g}
+          className="rounded-[4px] px-[9px] py-[3px] text-[11px] font-semibold tracking-[0.02em]"
+          style={i === 0 ? { color: RED, background: "rgba(229,9,20,0.08)" } : { color: "#4d4d4f", background: "#f0f0f2" }}
+        >
           {g}
-        </i>
+        </span>
       ))}
-    </span>
+    </p>
   );
 }
 
 export default function NewsDemo() {
   const t = useLoop(LENGTH, 7400);
   const loaded = t >= 900;
-  const scroll = -410 * easeOut(prog(t, 3600, 4600));
+  const scroll = -330 * easeOut(prog(t, 3600, 4600));
   const hover = t >= 6200 && t < 9200;
   const toast = t >= 8350 && t < 11000;
 
   return (
     <Loop t={t} length={LENGTH}>
-      <div className="relative h-full bg-white text-[#141414]">
-        <header className="flex h-[60px] items-center justify-between px-7">
-          <span className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/demos/updatebro-logo.png" alt="" width={34} height={34} />
-            <b className="text-[20px] font-black tracking-[0.06em]">UPDATE BRO!</b>
-          </span>
-          <span className="grid h-9 w-9 place-items-center rounded-full border border-[#e4e4e6] text-[15px] text-[#4d4d4f]">◐</span>
+      <div
+        className="relative overflow-hidden bg-white text-[#141414]"
+        style={{ width: 1024 / ZOOM, height: 606 / ZOOM, transform: `scale(${ZOOM})`, transformOrigin: "0 0", fontFamily: FONT }}
+      >
+        {/* Sticky header: brand row, sections, story chips */}
+        <header className="relative z-10 bg-white" style={{ boxShadow: scroll < -4 ? "0 4px 20px rgba(20,20,20,0.1)" : "none" }}>
+          <div className="flex items-center justify-between px-6 pb-1 pt-2.5">
+            <span className="flex items-center gap-2.5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/demos/updatebro-logo.png" alt="" width={30} height={30} className="drop-shadow-[0_3px_8px_rgba(20,20,20,0.25)]" />
+              <b className="text-[18px] font-black uppercase tracking-[0.04em]">Update Bro!</b>
+            </span>
+            <span className="grid h-[34px] w-[34px] place-items-center rounded-full border border-[#e8e8ea] text-[16px] text-[#4d4d4f]">◐</span>
+          </div>
+          <nav className="flex justify-center gap-9 border-b border-[#e8e8ea] px-6 pb-3.5 pt-2">
+            {["News", "Jobs", "Courses", "Hackathons", "Workshops", "Conferences"].map((n) => (
+              <span
+                key={n}
+                className="border-b-[3px] px-0.5 pb-3 pt-1.5 text-[18px] font-extrabold tracking-[0.01em]"
+                style={n === "News" ? { color: RED, borderColor: RED } : { color: "#4d4d4f", borderColor: "transparent" }}
+              >
+                {n}
+              </span>
+            ))}
+          </nav>
+          <div className="flex gap-2 overflow-hidden px-6 pb-2 pt-0.5">
+            {CHIPS.map((c, i) => (
+              <span
+                key={c}
+                className="shrink-0 whitespace-nowrap rounded-full border px-[15px] py-1.5 text-[12.5px] font-bold tracking-[0.02em]"
+                style={i === 0 ? { background: RED, borderColor: RED, color: "#fff" } : { borderColor: "#e8e8ea", color: "#4d4d4f" }}
+              >
+                {c}
+              </span>
+            ))}
+          </div>
         </header>
-        <nav className="flex h-[50px] items-start justify-center gap-11 border-b border-[#ececee] text-[17px] font-extrabold text-[#4d4d4f]">
-          {["News", "Jobs", "Courses", "Hackathons", "Workshops", "Conferences"].map((n) => (
-            <span key={n} className="relative pt-1.5" style={n === "News" ? { color: RED } : undefined}>
-              {n}
-              {n === "News" && <i className="absolute -bottom-[14px] left-0 h-[3px] w-full" style={{ background: RED }} />}
-            </span>
-          ))}
-        </nav>
-        <div className="relative z-10 flex h-[54px] items-center gap-2.5 overflow-hidden bg-white px-6 text-[13.5px] font-semibold text-[#333]">
-          {CHIPS.map((c, i) => (
-            <span key={c} className="shrink-0 rounded-full border px-4 py-1.5" style={i === 0 ? { background: RED, borderColor: RED, color: "#fff" } : { borderColor: "#e4e4e6" }}>
-              {c}
-            </span>
-          ))}
-        </div>
 
-        <div className="absolute inset-x-0 bottom-0 top-[164px] overflow-hidden">
-          <div style={{ transform: `translateY(${scroll}px)` }} className="px-6 pt-3">
-            {/* Billboard */}
-            <div
-              className="relative h-[400px] overflow-hidden rounded-[18px] p-11 shadow-[0_1px_3px_rgba(20,20,20,0.08),0_10px_30px_rgba(20,20,20,0.1)]"
-              style={{ background: "radial-gradient(520px 260px at 88% 0%, rgba(229,9,20,0.12), transparent 65%), linear-gradient(135deg,#efeff1,#f6f6f7)" }}
-            >
+        <div style={{ transform: `translateY(${scroll}px)` }}>
+          {/* Billboard */}
+          <div className="mx-auto max-w-[1200px] px-6">
+            <div className="relative isolate mb-3.5 mt-[22px] flex min-h-[420px] items-center overflow-hidden rounded-2xl bg-[#f6f6f7] shadow-[0_1px_3px_rgba(20,20,20,0.08),0_10px_30px_rgba(20,20,20,0.1)]">
               {loaded ? (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-                  <p className="text-[12px] font-black tracking-[0.22em]" style={{ color: RED }}>🔥 TOP STORY</p>
-                  <p className="mt-3 max-w-[640px] text-[34px] font-black leading-[1.08] tracking-tight">{TOP.title}</p>
-                  <p className="mt-3 max-w-[600px] text-[14.5px] leading-relaxed text-[#4d4d4f]">{TOP.summary}</p>
-                  <p className="mt-3 flex items-center gap-1.5 text-[12.5px] text-[#8c8c8e]">
-                    <Source name={TOP.source} /> · {TOP.ago}
-                  </p>
-                  <div className="mt-3"><Tags tags={TOP.tags} /></div>
-                  <p className="mt-4 flex items-center gap-3">
-                    <span className="flex items-center gap-2 rounded-full px-5 py-2 text-[13.5px] font-bold text-white" style={{ background: RED }}>▶ Read Full Article</span>
-                    <span className="text-[11.5px] text-[#8c8c8e]">↗ Opens the original source</span>
-                  </p>
-                </motion.div>
+                <>
+                  <motion.div
+                    className="absolute inset-0 -z-20"
+                    initial={{ opacity: 0, scale: 1.04 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ opacity: { duration: 0.7 }, scale: { duration: 6, ease: "easeOut" } }}
+                  >
+                    <StoryImage story={TOP} width={1600} />
+                  </motion.div>
+                  <div
+                    className="absolute inset-0 -z-10"
+                    style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.92) 42%, rgba(255,255,255,0.4) 72%, rgba(255,255,255,0.04) 100%)" }}
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="relative flex max-w-[620px] flex-col gap-3.5 px-12 py-11"
+                  >
+                    <p className="text-[12px] font-extrabold uppercase tracking-[0.14em]" style={{ color: RED }}>🔥 Top Story</p>
+                    <p className="text-[42px] font-black leading-[1.08] tracking-[-0.015em]">{TOP.title}</p>
+                    <p className="max-w-[54ch] text-[16px] leading-[1.6] text-[#4d4d4f]">{TOP.summary}</p>
+                    <Meta story={TOP} />
+                    <Tags tags={TOP.tags} />
+                    <p className="mt-1 flex items-center gap-4">
+                      <span className="flex items-center gap-[9px] rounded-md px-[22px] py-3 text-[15px] font-extrabold text-white shadow-[0_6px_18px_rgba(229,9,20,0.35)]" style={{ background: RED }}>
+                        <span className="text-[12px]">▶</span> Read Full Article
+                      </span>
+                      <span className="text-[11.5px] text-[#8c8c8e]">↗ Opens the original source</span>
+                    </p>
+                  </motion.div>
+                </>
               ) : (
-                <div className="space-y-3 pt-6">
-                  {[160, 600, 520, 420, 300].map((w, i) => (
-                    <i key={i} className="block animate-pulse rounded-md bg-[#e4e4e6]" style={{ width: w, height: i === 1 || i === 2 ? 34 : 14 }} />
+                <div className="space-y-3.5 px-12 py-11">
+                  {[120, 560, 480, 420, 260].map((w, i) => (
+                    <i key={i} className="block animate-pulse rounded-md bg-[#e4e4e6]" style={{ width: w, height: i === 1 || i === 2 ? 40 : 14 }} />
                   ))}
                 </div>
               )}
             </div>
-
-            {/* Trending Now */}
-            <p className="mt-9 flex items-baseline gap-3">
-              <i className="h-5 w-[3px] self-center rounded-full" style={{ background: RED }} />
-              <b className="text-[19px] font-black tracking-[0.08em]">TRENDING NOW</b>
-              <span className="text-[12.5px] font-semibold text-[#8c8c8e]">10 stories</span>
-            </p>
-            <div className="mt-5 flex gap-6 pl-9">
-              {TRENDING.map((s, i) => {
-                const on = hover && i === 1;
-                return (
-                  <motion.div
-                    key={s.title}
-                    initial={false}
-                    animate={{ y: on ? -6 : 0, scale: on ? 1.03 : 1 }}
-                    transition={{ duration: 0.25 }}
-                    className="relative w-[288px] shrink-0"
-                  >
-                    <span
-                      className="absolute -bottom-3 -left-12 z-10 text-[108px] font-black leading-none tracking-[-0.06em] text-white"
-                      style={{ WebkitTextStroke: `3px ${on ? RED : "#d5d5d8"}` }}
-                    >
-                      {i + 1}
-                    </span>
-                    <div className={`relative h-[162px] overflow-hidden rounded-[14px] ${on ? "shadow-[0_10px_30px_rgba(20,20,20,0.18)]" : ""}`}>
-                      <div className="grid h-full place-items-center" style={{ background: "radial-gradient(400px 200px at 80% -30%, rgba(229,9,20,0.14), transparent 65%), linear-gradient(135deg,#ececee,#f6f6f7)" }}>
-                        <span className="text-[44px] font-black text-[#8c8c8e]">{s.source[0]}</span>
-                      </div>
-                      <motion.div
-                        initial={false}
-                        animate={{ opacity: on ? 1 : 0 }}
-                        className="absolute inset-0 flex items-end bg-gradient-to-t from-black/85 via-black/55 to-transparent p-3.5"
-                      >
-                        <p className="text-[12px] leading-snug text-white">{s.summary}</p>
-                      </motion.div>
-                    </div>
-                    <div className="relative z-20 pl-1 pt-3">
-                      <p className="text-[15px] font-extrabold leading-snug">{s.title}</p>
-                      <p className="mt-1.5 flex items-center gap-1.5 text-[12.5px] text-[#8c8c8e]">
-                        <Source name={s.source} /> · {s.ago}
-                      </p>
-                      <div className="mt-2"><Tags tags={s.tags} /></div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
           </div>
+
+          {/* Trending Now rail */}
+          <section className="my-[26px]">
+            <div className="mx-auto mb-3 flex max-w-[1200px] items-center gap-2.5 px-6">
+              <b className="flex items-center text-[17px] font-black uppercase tracking-[0.06em]">
+                <i className="mr-2.5 inline-block h-4 w-1 rounded-sm" style={{ background: RED }} />
+                Trending Now
+              </b>
+              <span className="text-[12.5px] font-semibold text-[#8c8c8e]">10 stories</span>
+            </div>
+            <div className="mx-auto max-w-[1200px] overflow-hidden">
+              <div className="flex gap-4 px-6 pb-[18px] pt-2">
+                {TRENDING.map((s, i) => {
+                  const on = hover && i === HOVERED;
+                  return (
+                    <motion.article
+                      key={s.title}
+                      initial={false}
+                      animate={{ y: on ? -6 : 0, scale: on ? 1.03 : 1 }}
+                      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                      className="relative shrink-0 basis-[332px] pl-[52px]"
+                      style={{ zIndex: on ? 4 : 0 }}
+                    >
+                      <span
+                        className="absolute -bottom-3 -left-1.5 z-10 text-[108px] font-black leading-none tracking-[-0.06em] text-white"
+                        style={{ WebkitTextStroke: `3px ${on ? RED : "#d4d4d6"}` }}
+                      >
+                        {i + 1}
+                      </span>
+                      <div className={`relative aspect-video overflow-hidden rounded-[10px] bg-[#f0f0f2] ${on ? "shadow-[0_1px_3px_rgba(20,20,20,0.08),0_10px_30px_rgba(20,20,20,0.1)]" : "shadow-[0_1px_3px_rgba(20,20,20,0.1)]"}`}>
+                        <StoryImage story={s} width={480} />
+                        <div
+                          className="absolute inset-0 flex items-end p-3 transition-opacity duration-200"
+                          style={{ opacity: on ? 1 : 0, background: "linear-gradient(180deg, transparent 20%, rgba(255,255,255,0.92) 78%)" }}
+                        >
+                          <p
+                            className="line-clamp-4 text-[12.5px] leading-[1.5] text-[#141414] transition-transform duration-200"
+                            style={{ transform: on ? "none" : "translateY(6px)" }}
+                          >
+                            {s.summary}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="relative z-20 flex flex-col gap-1.5 px-0.5 pt-2.5">
+                        <p className="line-clamp-2 text-[14.5px] font-extrabold leading-[1.32] tracking-[-0.005em]">{s.title}</p>
+                        <Meta story={s} />
+                        <Tags tags={s.tags} />
+                      </div>
+                    </motion.article>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
         </div>
 
         {/* "You are leaving the platform" notice */}
@@ -208,7 +309,7 @@ export default function NewsDemo() {
           <span>
             External link — you are leaving the platform.
             <br />
-            <small className="opacity-70">Opening the full article on NYT Technology</small>
+            <small className="opacity-70">Opening the full article on {TRENDING[HOVERED].source}</small>
           </span>
         </motion.div>
       </div>

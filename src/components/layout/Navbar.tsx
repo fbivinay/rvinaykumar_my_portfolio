@@ -40,21 +40,14 @@ export default function Navbar({ onOpenPalette }: { onOpenPalette: () => void })
       <nav
         aria-label="Primary"
         className={cn(
-          "mx-auto flex max-w-6xl items-center justify-between rounded-xl border px-4 py-3 transition-all duration-500",
+          "mx-auto grid max-w-6xl grid-cols-[1fr_auto_1fr] items-center rounded-xl border px-4 py-3 transition-all duration-500",
           scrolled
             ? "border-line bg-black/60 shadow-card backdrop-blur-xl"
             : "border-transparent bg-transparent"
         )}
       >
-        {/* Brand */}
-        <a href="#top" className="flex items-center" aria-label="Back to top">
-          <span className="hidden text-sm font-semibold tracking-wide text-ink sm:block">
-            {profile.name}
-          </span>
-        </a>
-
-        {/* Desktop links */}
-        <ul className="hidden items-center gap-6 lg:flex">
+        {/* Desktop links, centred */}
+        <ul className="col-start-2 hidden items-center gap-6 lg:flex">
           {navLinks.map((l) => (
             <li key={l.href}>
               <a
@@ -82,7 +75,7 @@ export default function Navbar({ onOpenPalette }: { onOpenPalette: () => void })
         </ul>
 
         {/* Actions */}
-        <div className="flex items-center gap-1.5">
+        <div className="col-start-3 flex items-center gap-1.5 justify-self-end">
           <button
             onClick={onOpenPalette}
             aria-label="Open command palette (Ctrl+K)"

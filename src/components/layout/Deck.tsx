@@ -24,6 +24,8 @@ const ANCHORS: Record<string, string> = { top: "top", projects: featuredProjects
 
 const TURN = 38; // degrees between neighbouring slides on the wheel
 const DURATION = 1000; // ms per turn
+const QUIET = 200; // ms without wheel events that ends a scroll gesture
+const TRAVEL = 30; // px a gesture has to scroll before it turns a slide
 const ease = [0.76, 0, 0.24, 1] as const;
 
 const wheel: Variants = {
@@ -44,7 +46,7 @@ export default function Deck({ started }: { started: boolean }) {
   const keys = ORDER.filter((k) => (expanded ? k !== "more" : !SECOND.includes(k) && k !== "more-github"));
 
   // Listeners read the latest state through this ref instead of re-binding.
-  const live = useRef({ keys, key: view.key, lock: 0, last: 0, deltas: [] as number[] });
+  const live = useRef({ keys, key: view.key, lock: 0, gesture: { last: -Infinity, sum: 0, spent: false } });
   useEffect(() => {
     live.current.keys = keys;
     live.current.key = view.key;
@@ -63,25 +65,34 @@ export default function Deck({ started }: { started: boolean }) {
     const atTop = () => window.scrollY <= 1;
     const target = (d: number) => s.keys[s.keys.indexOf(s.key) + d];
 
+    /* One scroll gesture turns at most one slide. A gesture is every wheel event
+       up to a QUIET pause, so trackpad inertia (which can run for seconds after the
+       fingers lift) never turns a second slide. A gesture that starts mid-turn, or
+       while the page itself is scrolling, never turns one. */
     const onWheel = (e: WheelEvent) => {
-      const now = performance.now();
-      const mag = Math.abs(e.deltaY);
-      const gap = now - s.last;
-      const avg = s.deltas.length ? s.deltas.reduce((a, b) => a + b, 0) / s.deltas.length : 0;
-      // ponytail: a gesture is "new" after a pause or when the wheel speeds up again;
-      // trackpad inertia only slows down. Good enough for mice and trackpads alike.
-      const fresh = gap > 180 || (mag > 20 && mag > avg * 1.6);
-      s.deltas = gap > 180 ? [mag] : [...s.deltas.slice(-4), mag];
-      s.last = now;
-      if (!atTop() || e.ctrlKey) return;
-      const d = Math.sign(e.deltaY);
+      const g = s.gesture;
+      if (e.timeStamp - g.last > QUIET) {
+        g.sum = 0;
+        g.spent = performance.now() < s.lock;
+      }
+      g.last = e.timeStamp;
+      if (e.ctrlKey) return; // pinch-zoom
+      if (!atTop()) {
+        g.spent = true; // the page is scrolling: this gesture belongs to it
+        return;
+      }
+      const px = e.deltaY * (e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? window.innerHeight : 1);
+      const d = Math.sign(px);
       if (!d) return;
-      const busy = now < s.lock || !fresh;
       const to = target(d);
-      if (!to && !busy) return; // past either end of the deck: let the page scroll
+      if (!to && !g.spent) return; // past either end of the deck: let the page scroll
       e.preventDefault();
       e.stopPropagation(); // keep Lenis from scrolling underneath the deck
-      if (!busy && to) go(to);
+      if (g.spent || !to) return;
+      g.sum = Math.sign(g.sum) === d ? g.sum + px : px; // a change of direction starts the count again
+      if (Math.abs(g.sum) < TRAVEL) return;
+      g.spent = true;
+      go(to);
     };
 
     const onKey = (e: KeyboardEvent) => {

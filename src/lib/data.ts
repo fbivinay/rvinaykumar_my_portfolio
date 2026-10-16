@@ -58,8 +58,7 @@ export const skillGroups: SkillGroup[] = [
   {
     label: "ML, GenAI & Agentic AI",
     items: [
-      "Machine Learning", "Deep Learning", "NLP", "LLMs", "Scikit-learn", "PyTorch", "Keras",
-      "Random Forest", "Gradient Boosting", "Lasso / Elastic Net", "SHAP", "Clustering",
+      "Machine Learning", "Deep Learning", "LLMs", "Scikit-learn", "Clustering",
       "Feature Engineering", "Sentence Transformers", "RAG", "Vector Search", "AI Agents", "MCP",
       "Prompt Engineering", "Claude & Gemini APIs",
     ],
@@ -90,8 +89,8 @@ export const skillGroups: SkillGroup[] = [
 
 /** Flat list for the rotating skill sphere (a subset of the groups above) */
 export const sphereSkills = [
-  "Python", "R", "SQL", "PostgreSQL", "MongoDB", "Machine Learning", "Deep Learning", "NLP",
-  "LLMs", "Scikit-learn", "PyTorch", "RAG", "AI Agents", "MCP", "Apache Spark", "PySpark",
+  "Python", "R", "SQL", "PostgreSQL", "MongoDB", "Machine Learning", "Deep Learning",
+  "LLMs", "Scikit-learn", "RAG", "AI Agents", "MCP", "Apache Spark", "PySpark",
   "Kafka", "Databricks", "AWS", "Docker", "Kubernetes", "Pandas", "NumPy", "Power BI",
   "Tableau", "FastAPI", "React", "Next.js",
 ];
@@ -281,12 +280,6 @@ export const achievements = [
     title: "Conference Paper (Partially Accepted)",
     detail:
       "R Vinay Kumar & S. Dutta — \"Fiscal Discipline and Foreign Direct Investment among India's Top 10 FDI-Receiving States: A Computational Panel Analysis, FY 2019-20 to FY 2023-24.\" CONFLUENCE-2026, BMS College of Commerce and Management, Bengaluru.",
-  },
-  {
-    icon: "scroll",
-    title: "Research Publication (Under Review)",
-    detail:
-      "Co-author — \"A Cognitive RFID-Based Inventory Intelligence Framework for Real-Time Asset Visibility and Shrinkage Analytics in Apparel Retail Ecosystems.\" Keywords: RFID, Phantom Inventory, Shrinkage Analytics, IoT, Real-Time Tracking.",
   },
 ];
 

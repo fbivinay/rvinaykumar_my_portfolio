@@ -74,7 +74,7 @@ export default function Credentials() {
             <Trophy size={16} className="text-accent" aria-hidden /> Awards & Publications
           </h3>
         </Reveal>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-3">
           {achievements.map((a, i) => (
             <Reveal key={a.title} delay={i * 0.08}>
               <article className="card-lift h-full rounded-xl border border-line bg-gradient-to-b from-surface to-base p-6">
