@@ -7,12 +7,11 @@ import CustomCursor from "@/components/fx/CustomCursor";
 import ScrollProgress from "@/components/fx/ScrollProgress";
 import Navbar from "@/components/layout/Navbar";
 import CommandPalette from "@/components/layout/CommandPalette";
-import Hero from "@/components/sections/Hero";
-import Skills from "@/components/sections/Skills";
+import Deck from "@/components/layout/Deck";
 import Experience from "@/components/sections/Experience";
-import Projects from "@/components/sections/Projects";
 import Credentials from "@/components/sections/Credentials";
 import Contact from "@/components/sections/Contact";
+import { scrollToId } from "@/lib/utils";
 
 export default function Home() {
   const [started, setStarted] = useState(false);
@@ -30,7 +29,7 @@ export default function Home() {
       }
       if ((e.metaKey || e.ctrlKey) && e.key === "/") {
         e.preventDefault();
-        document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
+        scrollToId("#contact");
       }
     };
     window.addEventListener("keydown", onKey);
@@ -47,10 +46,9 @@ export default function Home() {
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
 
       <main id="main">
-        <Hero started={started} />
-        <Projects />
+        {/* Full-screen slides: hero → projects → skills; normal scrolling after */}
+        <Deck started={started} />
         <Experience />
-        <Skills />
         <Credentials />
         <Contact />
       </main>

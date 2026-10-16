@@ -4,8 +4,7 @@ export function cn(...inputs: ClassValue[]) {
   return clsx(inputs);
 }
 
-/** Scroll to an in-page anchor, respecting the fixed navbar. */
+/** Go to an in-page anchor. The deck (layout/Deck) turns to its slides and scrolls to everything else. */
 export function scrollToId(id: string) {
-  const el = document.querySelector(id);
-  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  window.dispatchEvent(new CustomEvent("navigate", { detail: id }));
 }

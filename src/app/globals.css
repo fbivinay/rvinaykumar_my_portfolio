@@ -3,21 +3,8 @@
 @tailwind utilities;
 
 /* ───────────────────────── Theme tokens ─────────────────────────
-   Dark (default) is the Netflix cinema. Light is the "lights on"
-   variant — same red, inverted stage. Persisted via data-theme.  */
-:root,
-[data-theme="light"] {
-  --bg: #fafafa;
-  --surface: #ffffff;
-  --raised: #f1f1f1;
-  --ink: #0a0a0a;
-  --mute: #555555;
-  --line: rgba(0, 0, 0, 0.09);
-  --glow: rgba(229, 9, 20, 0.25);
-  color-scheme: light;
-}
-
-[data-theme="dark"] {
+   One theme: the Netflix cinema — pure black stage, red accent.  */
+:root {
   --bg: #000000;
   --surface: #111111;
   --raised: #1a1a1a;
@@ -132,9 +119,6 @@ html.custom-cursor * {
 .card-lift:hover {
   transform: translateY(-6px) scale(1.02);
   box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.9), 0 0 40px -12px var(--glow);
-}
-[data-theme="light"] .card-lift:hover {
-  box-shadow: 0 24px 55px -24px rgba(0, 0, 0, 0.28), 0 0 44px -10px var(--glow);
 }
 
 /* Respect reduced motion globally — kill all animation/transition noise */

@@ -50,9 +50,10 @@ npm start
 │   │   └── utils.ts
 │   └── components/
 │       ├── fx/                     # Loader (intro), SmoothScroll, CustomCursor, ScrollProgress
-│       ├── layout/                 # Navbar, CommandPalette (⌘K), Footer (Now Playing)
-│       ├── sections/               # Hero, About, Skills, Experience, Projects, GithubSection, Credentials, Contact
-│       └── ui/                     # MagneticButton, Reveal, SectionHeading, Counter
+│       ├── layout/                 # Navbar, CommandPalette (⌘K), Deck (full-screen slides), Footer (Now Playing)
+│       ├── projects/               # Laptop frame + one screen-recording demo per project (demos/)
+│       ├── sections/               # Hero, About, Skills, Experience, Projects, Credentials, Contact
+│       └── ui/                     # MagneticButton, Reveal, SectionHeading, Counter, FitToScreen
 ```
 
 ## Where the content came from
@@ -72,14 +73,14 @@ Conflicts were resolved **Resume → LinkedIn → GitHub**, e.g. the ComedKares 
 ## Features
 
 - **Cinematic intro loader** — monogram beam, letter-by-letter name reveal, progress counter. Plays once per session; skipped for `prefers-reduced-motion`.
-- **Hero billboard** — canvas particle field with a mouse-reactive red key light, staggered 3D character reveal, cycling typewriter, parallax fade on scroll.
-- **Netflix project cards** — hover scale + glow + tech-chip reveal, category filter chips, and a shared-element (`layoutId`) modal with match score, real commit counts, Live Demo / Source / Case Study actions.
-- **Real GitHub telemetry** — contribution heatmap and language bars computed from the actual account export, not mocked.
+- **Hero billboard** — canvas particle field with a mouse-reactive red key light, staggered 3D character reveal, cycling typewriter.
+- **Full-screen deck** — hero, projects and skills are slides; a scroll, arrow key or swipe turns one slide along a wheel. After Skills the page scrolls normally, and scrolling back to the top returns to the deck.
+- **Projects in a laptop** — every project plays a screen recording of its live app, coded from its real interface and data (`components/projects/demos`), beside a short summary. "More Projects" reveals three more, then links to GitHub.
 - **3D skill sphere** — hand-rolled canvas projection (≈2 KB) instead of Three.js, so it holds 60fps everywhere. Hover to steer it.
-- **Command palette** — `⌘/Ctrl+K`: jump to sections, copy email, download resume, share, toggle theme. `⌘/Ctrl+/` jumps to contact.
+- **Command palette** — `⌘/Ctrl+K`: jump to sections, copy email, download resume, share. `⌘/Ctrl+/` jumps to contact.
 - **Custom cursor** — dot + trailing ring, expands over interactive elements, contracts on click. Fine pointers only.
 - **Lenis smooth scroll**, hide-on-scroll glass navbar, scroll progress bar, "Now Playing" section indicator, infinite skill marquee, animated counters, magnetic buttons.
-- **Dark / light mode** with `localStorage` persistence and a pre-paint script (no flash).
+- **Dark only** — one pure-black cinema theme.
 - **Contact form** with inline validation and a success sequence — composes a pre-filled email client-side (static site, nothing stored).
 
 ## SEO & accessibility

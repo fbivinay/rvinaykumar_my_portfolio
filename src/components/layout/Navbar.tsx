@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useScroll } from "framer-motion";
-import { Command, Download, Menu, Moon, Sun, X } from "lucide-react";
+import { Command, Download, Menu, X } from "lucide-react";
 import { navLinks, profile } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -22,27 +22,14 @@ export default function Navbar({ onOpenPalette }: { onOpenPalette: () => void })
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">("light");
 
   useEffect(() => {
-    setTheme(
-      (document.documentElement.getAttribute("data-theme") as "dark" | "light") ?? "light"
-    );
     return scrollY.on("change", (y) => {
       const prev = scrollY.getPrevious() ?? 0;
       setHidden(y > prev && y > 160 && !open);
       setScrolled(y > 24);
     });
   }, [scrollY, open]);
-
-  const toggleTheme = () => {
-    const next = theme === "dark" ? "light" : "dark";
-    setTheme(next);
-    document.documentElement.setAttribute("data-theme", next);
-    try {
-      localStorage.setItem("theme", next);
-    } catch {}
-  };
 
   return (
     <motion.header
@@ -55,15 +42,12 @@ export default function Navbar({ onOpenPalette }: { onOpenPalette: () => void })
         className={cn(
           "mx-auto flex max-w-6xl items-center justify-between rounded-xl border px-4 py-3 transition-all duration-500",
           scrolled
-            ? "border-line bg-black/60 shadow-card backdrop-blur-xl [html[data-theme=light]_&]:bg-white/70"
+            ? "border-line bg-black/60 shadow-card backdrop-blur-xl"
             : "border-transparent bg-transparent"
         )}
       >
         {/* Brand */}
-        <a href="#top" className="group flex items-center gap-2" aria-label="Back to top">
-          <span className="grid h-8 w-8 place-items-center rounded bg-accent text-lg font-extrabold text-white shadow-glow transition-transform duration-300 group-hover:scale-110">
-            {profile.monogram}
-          </span>
+        <a href="#top" className="flex items-center" aria-label="Back to top">
           <span className="hidden text-sm font-semibold tracking-wide text-ink sm:block">
             {profile.name}
           </span>
@@ -107,13 +91,6 @@ export default function Navbar({ onOpenPalette }: { onOpenPalette: () => void })
             <Command size={13} aria-hidden />
             <span className="font-mono">K</span>
           </button>
-          <button
-            onClick={toggleTheme}
-            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-            className="grid h-9 w-9 place-items-center rounded-md border border-line bg-white/5 text-mute transition-colors hover:border-accent/50 hover:text-ink"
-          >
-            {theme === "dark" ? <Sun size={15} aria-hidden /> : <Moon size={15} aria-hidden />}
-          </button>
           <a
             href={profile.resumeFile}
             download
@@ -141,7 +118,7 @@ export default function Navbar({ onOpenPalette }: { onOpenPalette: () => void })
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="mx-auto mt-2 max-w-6xl rounded-xl border border-line bg-black/85 p-4 backdrop-blur-xl lg:hidden [html[data-theme=light]_&]:bg-white/90"
+            className="mx-auto mt-2 max-w-6xl rounded-xl border border-line bg-black/85 p-4 backdrop-blur-xl lg:hidden"
           >
             <ul className="grid gap-1">
               {navLinks.map((l, i) => (

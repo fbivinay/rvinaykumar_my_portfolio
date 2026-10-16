@@ -48,61 +48,52 @@ export const profile = {
   siteUrl: "https://rvinaykumar-my-portfolio.vercel.app",
 } as const;
 
-/* ── Skills (Resume tables ∪ LinkedIn Skills.csv, de-duplicated) ── */
+/* ── Skills (exactly the Skills section of R_Vinay_Kumar_Resume.pdf) ── */
 export type SkillGroup = { label: string; items: string[] };
 export const skillGroups: SkillGroup[] = [
   {
-    label: "Languages & Querying",
-    items: ["Python", "R", "SQL", "Hadoop", "SPSS", "Jamovi"],
+    label: "Languages & Databases",
+    items: ["Python", "R", "SQL", "JavaScript", "TypeScript", "PostgreSQL", "MySQL", "MongoDB", "Supabase", "Redis"],
   },
   {
-    label: "ML / AI",
+    label: "ML, GenAI & Agentic AI",
     items: [
-      "Scikit-learn",
-      "PyTorch",
-      "Keras",
-      "Random Forest",
-      "Regression",
-      "Classification",
-      "GenAI Tools",
+      "Machine Learning", "Deep Learning", "NLP", "LLMs", "Scikit-learn", "PyTorch", "Keras",
+      "Random Forest", "Gradient Boosting", "Lasso / Elastic Net", "SHAP", "Clustering",
+      "Feature Engineering", "Sentence Transformers", "RAG", "Vector Search", "AI Agents", "MCP",
+      "Prompt Engineering", "Claude & Gemini APIs",
     ],
   },
   {
-    label: "Data & Analytics",
+    label: "Big Data, Cloud & DevOps",
     items: [
-      "Pandas",
-      "NumPy",
-      "Power BI",
-      "Tableau",
-      "Jupyter Notebook",
-      "Microsoft Excel",
-      "Statistical Data Analysis",
-      "Financial Econometrics",
+      "Apache Spark (Structured Streaming)", "PySpark", "Kafka", "Databricks", "Hadoop", "AWS (EC2, S3)",
+      "Azure", "Docker", "Kubernetes", "Helm", "Terraform", "GitHub Actions", "Vercel", "Git",
     ],
   },
-  { label: "Databases", items: ["MySQL", "MongoDB", "Supabase (PostgreSQL)", "Firebase"] },
   {
-    label: "Cloud & DevOps",
-    items: ["AWS", "Azure", "Git", "VS Code", "Software Deployment", "Vercel"],
+    label: "Statistics & Econometrics",
+    items: [
+      "Pandas", "NumPy", "SciPy", "Statsmodels", "linearmodels", "Panel Regression (FE / RE)",
+      "Hypothesis Testing", "Time Series", "Econometrics",
+    ],
   },
   {
-    label: "Leadership & Method",
-    items: [
-      "Design Thinking",
-      "Team Management",
-      "Entrepreneurship",
-      "Operations Management",
-      "Start-up Leadership",
-    ],
+    label: "BI & Visualization",
+    items: ["Data Visualization", "Power BI", "Tableau", "Excel", "SPSS", "Matplotlib", "Seaborn"],
+  },
+  {
+    label: "Web & APIs",
+    items: ["FastAPI", "Node.js", "Express", "React", "Next.js", "Tailwind CSS", "REST APIs"],
   },
 ];
 
-/** Flat list for the rotating skill sphere */
+/** Flat list for the rotating skill sphere (a subset of the groups above) */
 export const sphereSkills = [
-  "Python", "R", "SQL", "Hadoop", "SPSS", "Jamovi", "Scikit-learn", "PyTorch",
-  "Keras", "Pandas", "NumPy", "Power BI", "Tableau", "MySQL", "MongoDB",
-  "AWS", "Azure", "Git", "Firebase", "Machine Learning", "Random Forest",
-  "Regression", "GenAI", "Excel", "Supabase", "Design Thinking",
+  "Python", "R", "SQL", "PostgreSQL", "MongoDB", "Machine Learning", "Deep Learning", "NLP",
+  "LLMs", "Scikit-learn", "PyTorch", "RAG", "AI Agents", "MCP", "Apache Spark", "PySpark",
+  "Kafka", "Databricks", "AWS", "Docker", "Kubernetes", "Pandas", "NumPy", "Power BI",
+  "Tableau", "FastAPI", "React", "Next.js",
 ];
 
 /* ── Experience (LinkedIn Positions.csv, titles reconciled with resume) ── */
@@ -141,18 +132,6 @@ export const experience: Experience[] = [
       "Conducted descriptive and inferential statistical analyses; prepared and organized data for accuracy and consistency prior to analysis.",
     ],
   },
-  {
-    company: "Chaitra Enterprises",
-    title: "Founder",
-    location: "Mangaluru",
-    start: "Dec 2022",
-    end: "Present",
-    points: [
-      "Proprietor of a registered commercial establishment operating as a contractor office (Karnataka Shops & Commercial Establishments Act, 1961).",
-      "Founded and manage day-to-day business operations, overseeing a team of employees.",
-      "Handle client coordination, contracts, and service delivery; responsible for compliance, administration, and overall business growth.",
-    ],
-  },
 ];
 
 /* ── Education (Resume + LinkedIn Education.csv) ── */
@@ -175,125 +154,112 @@ export const education = [
   },
 ];
 
-/* ── Projects (Resume ∪ GitHub export; repo metadata is real) ── */
+/* ── Projects (Resume ∪ each repo's README and live site) ──
+   `id` also picks the laptop demo in components/projects/demos. */
 export type Project = {
   id: string;
   title: string;
-  tagline: string;
-  year: string;
-  match: number; // Netflix-style "match" — derived from role relevance
-  tags: string[];
-  category: "AI / ML" | "Full-Stack" | "IoT / Analytics";
-  description: string[];
+  summary: string;
+  points: string[];
   tech: string[];
+  live: string;
   github: string;
-  live?: string;
-  commits: number; // real count from git history in the export
-  accent: string; // poster gradient hue
 };
-export const projects: Project[] = [
-  {
-    id: "smart-rfid",
-    title: "Smart RFID Inventory Intelligence",
-    tagline: "Trend Trackers — real-time retail inventory, theft & misplacement alerts",
-    year: "2026",
-    match: 98,
-    tags: ["Award Winner", "Team Lead Project"],
-    category: "IoT / Analytics",
-    description: [
-      "Retail inventory intelligence platform where every clothing item carries an RFID tag. Tracks each item's live status — on rack, misplaced, billing, sold, or stolen — and raises alerts when items move to the wrong rack or leave the exit gate without billing.",
-      "Defined a three-state inventory model to automatically detect theft and misplacement events with instant dashboard alerts. Includes a live analytics dashboard and an AI assistant that answers inventory questions in plain English.",
-      "Field study conducted at Texs Mart, Gopalan Mall, Bengaluru — findings validated the phantom-inventory problem. Research paper co-authored and under review.",
-      "Won 2nd place for Outstanding Innovation, Impact and Presentation at Project Showcase Day 2026, St. Joseph's University.",
-    ],
-    tech: ["Next.js 15", "React 19", "Supabase", "Tailwind CSS", "Recharts", "RFID / IoT", "OpenRouter LLM"],
-    github: "https://github.com/fbivinay/Smart-RFID-Integrated-Inventory-system",
-    live: "https://final-tt-rfid.vercel.app",
-    commits: 28,
-    accent: "0",
-  },
-  {
-    id: "endurance-intelligence",
-    title: "Endurance Intelligence",
-    tagline: "AI-powered running training planner built on real Strava history",
-    year: "2026",
-    match: 96,
-    tags: ["94% Model Accuracy", "Solo Build"],
-    category: "AI / ML",
-    description: [
-      "Strava-connected web app that reads real running history and generates a personalised, science-backed training plan for a target race — weekly mileage, long runs, and Daniels VDOT pace zones for every session.",
-      "Trained a Random Forest classifier to prescribe adaptive training plans for beginner, intermediate, and advanced runners — achieving 94% model accuracy.",
-      "Automatic fitness-level detection from the last 60 runs, science-based periodization (10% growth rule, 4-week build/recover cycles, 80/20 split), and a fitness-loss forecast using an exponential detraining model.",
-      "Data ingestion pipeline handles both Strava OAuth API data and manual user input, broadening system accessibility.",
-    ],
-    tech: ["Python", "Random Forest", "Scikit-learn", "Pandas", "React 18", "Vite", "Strava API", "Supabase", "Vercel Serverless"],
-    github: "https://github.com/fbivinay/Strava-Integrated-Endurance-intelligence",
-    live: "https://enduranceintelligence.vercel.app",
-    commits: 27,
-    accent: "150",
-  },
+export const featuredProjects: Project[] = [
   {
     id: "sju-chatbot",
     title: "SJU Chatbot",
-    tagline: "AI assistant for St Joseph's University with live web retrieval",
-    year: "2026",
-    match: 92,
-    tags: ["RAG / Retrieval", "FastAPI"],
-    category: "Full-Stack",
-    description: [
-      "AI chatbot for St Joseph's University, Bengaluru, answering student questions against real crawled university content.",
-      "Supabase-backed retrieval over scraped department data, with smarter search that understands abbreviations and campus shorthand.",
-      "FastAPI server with an LLM via the OpenRouter API, deployed with a public URL — the full site clone plus embedded chat.",
+    summary:
+      "AI assistant for St Joseph's University, Bengaluru, answering student questions on programmes, admissions, fees and campus life from the university's own website.",
+    points: [
+      "Scraped ~290 university pages into ~940 chunks in Supabase; full-text search feeds Gemini grounded context.",
+      "Reads the live deadlines and notices pages at question time and streams the answer word by word.",
+      "Live on the SJU website via a one-tag embed, generating revenue.",
     ],
-    tech: ["Python", "FastAPI", "Supabase", "OpenRouter LLM", "Firecrawl", "Railway / Vercel"],
-    github: "https://github.com/fbivinay/sju-chatbot",
+    tech: ["Python", "FastAPI", "Supabase", "Gemini", "Playwright", "Vercel"],
     live: "https://sju-chatbot.vercel.app",
-    commits: 9,
-    accent: "210",
+    github: "https://github.com/fbivinay/sju-chatbot",
+  },
+  {
+    id: "everest",
+    title: "Everest Textile Mills",
+    summary:
+      "Built for the Odoo x NMIT Hackathon 2026 finals: one system that runs a textile mill, tracking every order from yarn and production through quality checks and dispatch to the invoice and payment.",
+    points: [
+      "Hackathon finalist: top 6 of 2,840+ teams.",
+      "Live owner dashboard, plus separate views for store, production, quality and dispatch staff.",
+      "AI assistant that answers questions about the mill from live data.",
+    ],
+    tech: ["React", "TypeScript", "Node.js", "Express", "Prisma", "PostgreSQL", "Gemini"],
+    live: "https://everest-manufacturing-dashboard.vercel.app",
+    github: "https://github.com/fbivinay/Odoo-Hackathon-Finals-Textile-Manufacturing",
+  },
+  {
+    id: "intelligent-investment",
+    title: "Intelligent Investment",
+    summary:
+      "An algorithmic investing system for an Indian investor that tests strategies on years they never saw and compares them with ETFs and funds after every real Fyers charge and every tax rule.",
+    points: [
+      "₹10 lakh from April 2017 grew to ₹57.7 lakh after all charges and tax: 20.3% a year, 18% worst fall.",
+      "197 dated charge and tax rules; every trade is charged and taxed by the rules of its own date.",
+      "A rules-based momentum strategy and an LSTM portfolio model behind a live what-if calculator.",
+    ],
+    tech: ["Python", "pandas", "NumPy", "LSTM", "Next.js", "Vercel"],
+    live: "https://intelligent-investment.vercel.app",
+    github: "https://github.com/fbivinay/Intelligent_Investment",
+  },
+];
+export const moreProjects: Project[] = [
+  {
+    id: "update-bro",
+    title: "Update Bro!",
+    summary:
+      "An AI and tech news site that gathers stories from 36 sources, shows a short AI summary of each and links straight to the original article.",
+    points: [
+      "Top story and a Trending Now rail ranked by an importance score, weighted by source authority and recency.",
+      "Neutral 3–4 line summaries from Claude, with an extractive fallback so the site always works.",
+      "Feeds refresh every minute behind a CDN-cached serverless API.",
+    ],
+    tech: ["Node.js", "Express", "JavaScript", "Claude API", "RSS", "Vercel"],
+    live: "https://ai-tech-news-alpha.vercel.app",
+    github: "https://github.com/fbivinay/Ai_tech_news",
+  },
+  {
+    id: "kasauti",
+    title: "Kasauti",
+    summary:
+      "AI-powered MPLADS verification for Smart India Hackathon 2026 (SIH26102, MoSPI): every MP development work is scored against comparable works, and every flag is explained in the record's own figures.",
+    points: [
+      "Risk-scores 250,839 works using peer cost comparison, Isolation Forest and compliance rules.",
+      "Sentence-BERT flags duplicate works; Gemini classifies 41,691 works into 22 sectors.",
+      "Nightly sync reconciles with MoSPI data; won the SIH internal round.",
+    ],
+    tech: ["Python", "FastAPI", "PostgreSQL", "Scikit-learn", "Sentence-BERT", "Next.js"],
+    live: "https://mplads-risk-monitor-web.vercel.app",
+    github: "https://github.com/fbivinay/SIH-HACKATHON",
+  },
+  {
+    id: "retail-analytics",
+    title: "Retail Analytics",
+    summary:
+      "An animated slide-deck website for an MSc Big Data Analytics talk, walking from data roles and customer data to AI forecasting, a Target industry interview, career skills and live job openings in India.",
+    points: [
+      "33 scenes in six sections on its own deck engine: keyboard control, URL sync and seven transitions.",
+      "Interactive teaching visuals for demand forecasting, recommendations and market basket analysis.",
+      "A jobs board collected every morning from employer career sites by GitHub Actions.",
+    ],
+    tech: ["React", "TypeScript", "Vite", "Tailwind CSS", "Motion", "GitHub Actions"],
+    live: "https://mom-lab-finals.vercel.app",
+    github: "https://github.com/fbivinay/MOM_Lab_Finals",
   },
 ];
 
-/* ── GitHub stats (computed from the actual account export) ── */
-export const github = {
-  username: "fbivinay",
-  url: "https://github.com/fbivinay",
-  totalCommits: 64,
-  publicRepos: 3,
-  collaborators: 4, // write-access collaborators on Smart-RFID
-  memberSince: "March 2026",
-  /** Real commit dates → count, extracted from git history in the export */
-  activity: [
-    { date: "2026-03-06", count: 1 },
-    { date: "2026-03-07", count: 6 },
-    { date: "2026-03-08", count: 15 },
-    { date: "2026-03-20", count: 3 },
-    { date: "2026-06-09", count: 4 },
-    { date: "2026-06-10", count: 15 },
-    { date: "2026-06-11", count: 7 },
-    { date: "2026-06-19", count: 1 },
-    { date: "2026-06-27", count: 6 },
-    { date: "2026-06-30", count: 1 },
-    { date: "2026-07-01", count: 1 },
-    { date: "2026-07-02", count: 1 },
-    { date: "2026-07-05", count: 3 },
-  ],
-  /** Byte-weighted language mix across all repos (lockfiles/config excluded) */
-  languages: [
-    { name: "JavaScript / React", pct: 74.7, color: "#E50914" },
-    { name: "HTML", pct: 12.6, color: "#B81D24" },
-    { name: "Markdown / Docs", pct: 6.8, color: "#831010" },
-    { name: "Python", pct: 5.6, color: "#5A0B0F" },
-    { name: "CSS", pct: 0.3, color: "#3d3d3d" },
-  ],
-};
-
-/* ── Certifications (Resume ∪ LinkedIn Certifications.csv) ── */
+/* ── Certifications (exactly the Certifications section of the resume) ── */
 export const certifications = [
-  { name: "AWS Cloud Practitioner Essentials", issuer: "Coursera / Amazon Web Services", year: "—" },
-  { name: "Python Fundamentals", issuer: "Great Learning", year: "2022" },
-  { name: "Introduction to Excel", issuer: "Labour Law Advisor", year: "2022" },
-  { name: "Microsoft AI Classroom Series", issuer: "Microsoft", year: "2021" },
-  { name: "The Fundamentals of Digital Marketing", issuer: "Google Digital Garage", year: "2021" },
+  { name: "Data Analytics Professional Certificate", issuer: "Google" },
+  { name: "Introduction to Python", issuer: "Great Learning" },
+  { name: "Introduction to MongoDB", issuer: "MongoDB" },
+  { name: "Microsoft AI Classroom Series", issuer: "Microsoft" },
 ];
 
 /* ── Achievements & publications (Resume + LinkedIn feed) ── */
@@ -309,6 +275,12 @@ export const achievements = [
     title: "National-Level Table Tennis Player",
     detail:
       "Represented Mangalore University at the South Zone National Table Tennis Championships — competitive discipline, resilience, and teamwork at the national level.",
+  },
+  {
+    icon: "scroll",
+    title: "Conference Paper (Partially Accepted)",
+    detail:
+      "R Vinay Kumar & S. Dutta — \"Fiscal Discipline and Foreign Direct Investment among India's Top 10 FDI-Receiving States: A Computational Panel Analysis, FY 2019-20 to FY 2023-24.\" CONFLUENCE-2026, BMS College of Commerce and Management, Bengaluru.",
   },
   {
     icon: "scroll",
@@ -328,8 +300,8 @@ export const stats = [
 
 export const navLinks = [
   { href: "#projects", label: "Projects" },
-  { href: "#experience", label: "Experience" },
   { href: "#skills", label: "Skills" },
+  { href: "#experience", label: "Experience" },
   { href: "#education", label: "Education" },
   { href: "#contact", label: "Contact" },
 ];

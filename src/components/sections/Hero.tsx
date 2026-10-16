@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { ChevronDown, Download, FolderOpen, Send } from "lucide-react";
 import { profile } from "@/lib/data";
 import { usePrefersReducedMotion, useTypewriter } from "@/lib/hooks";
@@ -108,25 +108,17 @@ function NameReveal({ text, delay = 0 }: { text: string; delay?: number }) {
   );
 }
 
+/** First slide of the deck; the deck draws the grid stage behind it. */
 export default function Hero({ started }: { started: boolean }) {
   const typed = useTypewriter(profile.roles);
-  const sectionRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  });
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "28%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
   return (
     <section
-      ref={sectionRef}
       id="top"
       aria-label="Introduction"
-      className="relative flex min-h-svh items-center overflow-hidden"
+      className="relative flex h-full items-center overflow-hidden"
     >
       {/* Layered cinematic backdrop */}
-      <div className="absolute inset-0 bg-grid" aria-hidden />
       <div
         aria-hidden
         className="animate-drift absolute -top-1/3 left-1/2 h-[80vh] w-[80vw] -translate-x-1/2 rounded-full bg-accent/10 blur-[140px]"
@@ -138,32 +130,16 @@ export default function Hero({ started }: { started: boolean }) {
       />
 
       {started && (
-        <motion.div
-          style={{ y, opacity }}
-          className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-10 px-6 py-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:py-0"
-        >
+        <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-10 px-6 py-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:py-0">
           {/* ── LEFT: text column ── */}
           <div className="order-2 text-center lg:order-1 lg:text-left">
-            {/* Netflix-style meta row */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15, duration: 0.6 }}
-              className="mb-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[12px] font-medium tracking-wide text-mute lg:justify-start"
-            >
-              <span>2026</span>
-              <span aria-hidden>·</span>
-              <span className="rounded border border-line px-1.5 py-0.5 text-[10px]">MSc BDA</span>
-              <span aria-hidden>·</span>
-              <span>{profile.location.split(",")[0]}</span>
-            </motion.div>
-
             <h1 className="text-balance text-5xl font-extrabold leading-[1.02] tracking-tighter text-ink sm:text-7xl lg:text-8xl">
-              <NameReveal text="R Vinay" delay={0.25} />
-              <br />
+              <NameReveal text="R " delay={0.25} />
               <span className="text-accent drop-shadow-[0_0_40px_rgba(229,9,20,0.45)]">
-                <NameReveal text="Kumar" delay={0.55} />
+                <NameReveal text="Vinay" delay={0.31} />
               </span>
+              <br />
+              <NameReveal text="Kumar" delay={0.55} />
             </h1>
 
             {/* Typewriter role */}
@@ -261,7 +237,7 @@ export default function Hero({ started }: { started: boolean }) {
               </div>
             </motion.div>
           </motion.div>
-        </motion.div>
+        </div>
       )}
 
       {/* Scroll indicator */}

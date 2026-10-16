@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight, Copy, Download, Github, Linkedin, Mail,
-  MoonStar, Search, Share2,
+  Search, Share2,
 } from "lucide-react";
 import { navLinks, profile } from "@/lib/data";
 import { cn, scrollToId } from "@/lib/utils";
@@ -97,17 +97,6 @@ export default function CommandPalette({
             await navigator.clipboard.writeText(url);
             setToast("Link copied");
           }
-        },
-      },
-      {
-        id: "theme",
-        label: "Toggle dark / light mode",
-        icon: <MoonStar size={15} aria-hidden />,
-        run: () => {
-          const cur = document.documentElement.getAttribute("data-theme");
-          const next = cur === "light" ? "dark" : "light";
-          document.documentElement.setAttribute("data-theme", next);
-          try { localStorage.setItem("theme", next); } catch {}
         },
       },
     ];

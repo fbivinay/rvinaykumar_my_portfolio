@@ -24,7 +24,7 @@ export default function Experience() {
       <SectionHeading
         eyebrow="Episodes"
         title="Experience"
-        blurb="From founding a business at the base of the stack to shipping analytics inside a live retail floor."
+        blurb="From statistical research support to shipping analytics inside a live retail floor."
       />
 
       <ol ref={listRef} className="relative ml-3 border-l border-line sm:ml-0 sm:border-none" role="list">

@@ -12,17 +12,21 @@ export default function SectionHeading({
   eyebrow,
   title,
   blurb,
+  compact = false,
 }: {
   eyebrow: string;
   title: string;
   blurb?: string;
+  /** Tighter bottom margin, for headings inside a full-screen slide */
+  compact?: boolean;
 }) {
   const reduced = usePrefersReducedMotion();
   const ease = [0.22, 1, 0.36, 1] as const;
+  const margin = compact ? "mb-6" : "mb-10 sm:mb-14";
 
   if (reduced) {
     return (
-      <div className="mb-10 sm:mb-14">
+      <div className={margin}>
         <p className="eyebrow mb-3">{eyebrow}</p>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <h2 className="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl lg:text-5xl">{title}</h2>
@@ -35,7 +39,7 @@ export default function SectionHeading({
 
   return (
     <motion.div
-      className="mb-10 sm:mb-14"
+      className={margin}
       initial="hidden"
       whileInView="show"
       viewport={{ once: false, margin: "0px 0px -8% 0px" }}

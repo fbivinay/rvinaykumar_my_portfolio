@@ -50,7 +50,7 @@ export default function Credentials() {
             <BadgeCheck size={16} className="text-accent" aria-hidden /> Certifications
           </h3>
         </Reveal>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {certifications.map((c, i) => (
             <Reveal key={c.name} delay={i * 0.06}>
               <div className="card-lift flex h-full items-start gap-3 rounded-lg border border-line bg-surface p-4">
@@ -59,10 +59,7 @@ export default function Credentials() {
                 </span>
                 <div>
                   <p className="text-sm font-semibold leading-snug text-ink">{c.name}</p>
-                  <p className="mt-1 text-xs text-mute">
-                    {c.issuer}
-                    {c.year !== "—" && <> · {c.year}</>}
-                  </p>
+                  <p className="mt-1 text-xs text-mute">{c.issuer}</p>
                 </div>
               </div>
             </Reveal>
@@ -77,7 +74,7 @@ export default function Credentials() {
             <Trophy size={16} className="text-accent" aria-hidden /> Awards & Publications
           </h3>
         </Reveal>
-        <div className="grid gap-4 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2">
           {achievements.map((a, i) => (
             <Reveal key={a.title} delay={i * 0.08}>
               <article className="card-lift h-full rounded-xl border border-line bg-gradient-to-b from-surface to-base p-6">

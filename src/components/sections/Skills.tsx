@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { skillGroups, sphereSkills } from "@/lib/data";
 import { usePrefersReducedMotion } from "@/lib/hooks";
+import FitToScreen from "@/components/ui/FitToScreen";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
 
@@ -83,7 +84,6 @@ function SkillSphere() {
         })
         .sort((a, b) => a.z - b.z);
 
-      const isLight = document.documentElement.getAttribute("data-theme") === "light";
       for (const p of projected) {
         const depth = (p.z + 1) / 2; // 0 back → 1 front
         const size = 9 + depth * 6;
@@ -95,9 +95,7 @@ function SkillSphere() {
           ctx.shadowColor = "rgba(229,9,20,0.6)";
           ctx.shadowBlur = 14;
         } else {
-          ctx.fillStyle = isLight
-            ? `rgba(10,10,10,${0.18 + depth * 0.6})`
-            : `rgba(255,255,255,${0.14 + depth * 0.6})`;
+          ctx.fillStyle = `rgba(255,255,255,${0.14 + depth * 0.6})`;
           ctx.shadowBlur = 0;
         }
         ctx.fillText(p.label, p.sx, p.sy);
@@ -124,59 +122,63 @@ function SkillSphere() {
       ref={canvasRef}
       aria-hidden
       data-cursor="hover"
-      className="h-[340px] w-full sm:h-[420px]"
+      className="h-[340px] w-full sm:h-[400px]"
     />
   );
 }
 
+/** Last full-screen slide of the deck: heading, sphere and chips sized to one screen. */
 export default function Skills() {
   const marqueeItems = [...sphereSkills, ...sphereSkills];
   return (
-    <section id="skills" aria-label="Skills" className="relative py-16 sm:py-24 lg:py-32">
-      <div className="mx-auto max-w-6xl px-6">
-        <SectionHeading
-          eyebrow="Genres"
-          title="Skills & Tooling"
-          blurb="Steer the sphere — the toolkit spans statistics, ML, BI dashboards, and cloud."
-        />
+    <section id="skills" aria-label="Skills" className="relative flex h-full flex-col pb-6 pt-24">
+      <FitToScreen>
+        <div className="mx-auto max-w-7xl px-6">
+          <SectionHeading
+            compact
+            eyebrow="Genres"
+            title="Skills & Tooling"
+            blurb="Steer the sphere — the toolkit spans statistics, ML, BI dashboards, and cloud."
+          />
 
-        <div className="grid items-center gap-10 lg:grid-cols-2">
-          <Reveal>
-            <div className="relative overflow-hidden rounded-2xl border border-line bg-surface/60">
-              <div className="bg-grid absolute inset-0" aria-hidden />
-              <SkillSphere />
+          <div className="grid items-center gap-8 lg:grid-cols-[0.72fr_1.28fr]">
+            <Reveal>
+              <div className="relative overflow-hidden rounded-2xl border border-line bg-surface/60">
+                <div className="bg-grid absolute inset-0" aria-hidden />
+                <SkillSphere />
+              </div>
+            </Reveal>
+
+            {/* Grouped chips with hover glow */}
+            <div className="grid gap-3.5">
+              {skillGroups.map((g, gi) => (
+                <Reveal key={g.label} delay={gi * 0.06}>
+                  <div>
+                    <h3 className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-mute">
+                      {g.label}
+                    </h3>
+                    <ul className="flex flex-wrap gap-1.5" role="list">
+                      {g.items.map((item) => (
+                        <li key={item}>
+                          <span
+                            data-cursor="hover"
+                            className="inline-block rounded-md border border-line bg-surface px-2.5 py-1 text-[12px] font-medium text-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/60 hover:shadow-glow"
+                          >
+                            {item}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Reveal>
+              ))}
             </div>
-          </Reveal>
-
-          {/* Grouped chips with hover glow */}
-          <div className="grid gap-5">
-            {skillGroups.map((g, gi) => (
-              <Reveal key={g.label} delay={gi * 0.06}>
-                <div>
-                  <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-mute">
-                    {g.label}
-                  </h3>
-                  <ul className="flex flex-wrap gap-2" role="list">
-                    {g.items.map((item) => (
-                      <li key={item}>
-                        <span
-                          data-cursor="hover"
-                          className="inline-block rounded-md border border-line bg-surface px-3 py-1.5 text-[13px] font-medium text-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/60 hover:shadow-glow"
-                        >
-                          {item}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Reveal>
-            ))}
           </div>
         </div>
-      </div>
+      </FitToScreen>
 
       {/* Infinite marquee */}
-      <div className="marquee-mask mt-20 overflow-hidden border-y border-line py-4" aria-hidden>
+      <div className="marquee-mask mt-6 shrink-0 overflow-hidden border-y border-line py-4" aria-hidden>
         <div className="animate-marquee flex w-max gap-10 whitespace-nowrap">
           {marqueeItems.map((s, i) => (
             <span key={i} className="flex items-center gap-10 text-sm font-semibold uppercase tracking-[0.2em] text-mute/60">
