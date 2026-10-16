@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { CANVAS } from "../Laptop";
 import { Cursor, easeOut, Loop, prog, useLoop, type CursorKey } from "../kit";
 
-/* ai-tech-news-alpha.vercel.app in a 1280-wide window: the billboard top story,
+/* ai-tech-news-alpha.vercel.app in a 1380-wide window: the billboard top story,
    the ranked Trending Now rail, a card's AI summary on hover and the click-out
    notice. Stories are from the live feed (16 Oct 2026). Images load the way the
    site loads them: through its image optimiser, then the publisher's own URL,
@@ -12,7 +13,7 @@ import { Cursor, easeOut, Loop, prog, useLoop, type CursorKey } from "../kit";
 
 const RED = "#e50914";
 const LENGTH = 13000;
-const ZOOM = 0.8; // the site at 1280px wide, fitted into the 1024px screen
+const ZOOM = 0.8; // the site at 1380px wide, fitted into the 1104px screen
 const SITE = "https://ai-tech-news-alpha.vercel.app";
 const FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"; // the site's own stack
 
@@ -73,17 +74,19 @@ const TRENDING: Story[] = [
 const CHIPS = ["Top Story", "Trending Now", "AI Models", "Tech", "Startups & Funding", "Policy & Regulation", "Security", "Hardware & Chips", "Consumer Tech"];
 const HOVERED = 2; // the Nvidia story
 
-/** Cursor keys are in screen (1024-wide) coordinates, measured on the rendered page. */
+/** Cursor keys in screen coordinates, measured on the rendered page when the screen was 1024 wide.
+    The site's content is centred, so they move by half of the width added since. */
+const X = (CANVAS.w - 1024) / 2;
 const KEYS: CursorKey[] = [
-  [0, 760, 330],
-  [1800, 300, 300], // over the top story's headline
-  [3300, 520, 420],
-  [4600, 600, 430],
-  [6200, 764, 441], // hover the Nvidia story
-  [8100, 764, 441],
-  [8300, 764, 441, 1], // open it
-  [8800, 764, 441],
-  [10200, 760, 250],
+  [0, X + 760, 330],
+  [1800, X + 300, 300], // over the top story's headline
+  [3300, X + 520, 420],
+  [4600, X + 600, 430],
+  [6200, X + 764, 441], // hover the Nvidia story
+  [8100, X + 764, 441],
+  [8300, X + 764, 441, 1], // open it
+  [8800, X + 764, 441],
+  [10200, X + 760, 250],
 ];
 
 /** A story image: the optimiser first, then the publisher's URL, then the placeholder. */
@@ -160,7 +163,7 @@ export default function NewsDemo() {
     <Loop t={t} length={LENGTH}>
       <div
         className="relative overflow-hidden bg-white text-[#141414]"
-        style={{ width: 1024 / ZOOM, height: 606 / ZOOM, transform: `scale(${ZOOM})`, transformOrigin: "0 0", fontFamily: FONT }}
+        style={{ width: CANVAS.w / ZOOM, height: (CANVAS.h - CANVAS.bar) / ZOOM, transform: `scale(${ZOOM})`, transformOrigin: "0 0", fontFamily: FONT }}
       >
         {/* Sticky header: brand row, sections, story chips */}
         <header className="relative z-10 bg-white" style={{ boxShadow: scroll < -4 ? "0 4px 20px rgba(20,20,20,0.1)" : "none" }}>

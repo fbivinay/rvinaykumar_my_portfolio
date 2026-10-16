@@ -1,16 +1,18 @@
 "use client";
 
 import { ArrowLeft, ArrowRight, Maximize2, Search, ShoppingCart, Star } from "lucide-react";
+import { CANVAS } from "../Laptop";
 import { Cursor, easeOut, Loop, prog, useLoop, type CursorKey } from "../kit";
 
 /* mom-lab-finals.vercel.app, presented: the cover's barcode turning into a
    sales chart, a jump to the Data section, then its customer journey built
    stage by stage (Search, View, Compare, Add to cart) while the event log
-   records each step. Drawn on the deck's own 1600-wide stage (1rem = 16px)
-   and scaled into the laptop. */
+   records each step. Drawn on the deck's own 1600-wide stage (1rem = 16px),
+   scaled into the laptop and centred on the screen, as the deck centres it. */
 
 const LENGTH = 15500;
 const STAGE = { w: 1600, h: 947, scale: 1024 / 1600 };
+const X = (CANVAS.w - STAGE.w * STAGE.scale) / 2; // where the stage starts on the screen
 const C = {
   bg: "#f5f4f0", surface: "#fbfaf7", fg: "#171a17", fg2: "#474b46", fg3: "#6b6f69", line: "#dfddd6",
   line2: "#c9c6be", accent: "#1d6a44", accentInk: "#165536", wash: "#e0ebe3", signal: "#e2703a",
@@ -57,23 +59,25 @@ const stageX = (i: number) => 100 + i * 200; // stage dot centres (left 88 + 12 
 const TO_DATA = 4600; // curtain into the Data section
 const BUILDS = [TO_DATA, 7600, 9600, 11600]; // Search, then clicks on View, Compare, Add to cart
 
-const s = (v: number) => v * STAGE.scale; // stage px → canvas px for the cursor
+/* stage px → canvas px for the cursor */
+const sx = (v: number) => X + v * STAGE.scale;
+const sy = (v: number) => v * STAGE.scale;
 const KEYS: CursorKey[] = [
-  [0, 700, 260],
-  [3200, 420, 470],
-  [4300, s(348), s(762), 1], // 02 Data
-  [5000, s(348), s(762)],
-  [6400, 640, 330],
-  [7300, s(stageX(1)), s(738)],
-  [7600, s(stageX(1)), s(738), 1], // View
-  [8400, s(stageX(1)), s(738)],
-  [9300, s(stageX(2)), s(738)],
-  [9600, s(stageX(2)), s(738), 1], // Compare
-  [10400, s(stageX(2)), s(738)],
-  [11300, s(stageX(3)), s(738)],
-  [11600, s(stageX(3)), s(738), 1], // Add to cart
-  [12300, s(stageX(3)), s(738)],
-  [13600, 760, 260],
+  [0, X + 700, 260],
+  [3200, X + 420, 470],
+  [4300, sx(348), sy(762), 1], // 02 Data
+  [5000, sx(348), sy(762)],
+  [6400, X + 640, 330],
+  [7300, sx(stageX(1)), sy(738)],
+  [7600, sx(stageX(1)), sy(738), 1], // View
+  [8400, sx(stageX(1)), sy(738)],
+  [9300, sx(stageX(2)), sy(738)],
+  [9600, sx(stageX(2)), sy(738), 1], // Compare
+  [10400, sx(stageX(2)), sy(738)],
+  [11300, sx(stageX(3)), sy(738)],
+  [11600, sx(stageX(3)), sy(738), 1], // Add to cart
+  [12300, sx(stageX(3)), sy(738)],
+  [13600, X + 760, 260],
 ];
 
 /** Headline words rising out of a mask, like AnimatedHeadline. */
@@ -337,7 +341,8 @@ export default function RetailDeckDemo() {
 
   return (
     <Loop t={t} length={LENGTH}>
-      <div style={{ position: "absolute", left: 0, top: 0, width: STAGE.w, height: STAGE.h, transform: `scale(${STAGE.scale})`, transformOrigin: "0 0", background: C.bg, color: C.fg, overflow: "hidden" }}>
+      <div style={layer} />
+      <div style={{ position: "absolute", left: X, top: 0, width: STAGE.w, height: STAGE.h, transform: `scale(${STAGE.scale})`, transformOrigin: "0 0", background: C.bg, color: C.fg, overflow: "hidden" }}>
         {/* scenes */}
         {t < TO_DATA + 900 && (
           <div style={layer}>
@@ -350,10 +355,6 @@ export default function RetailDeckDemo() {
           </div>
         )}
 
-        {/* progress line */}
-        <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: 3, background: "rgba(223,221,214,0.6)" }}>
-          <div style={{ height: "100%", width: `${((index + (data ? step / 8 : 0)) / 32) * 100}%`, background: C.accent, transition: "width .7s cubic-bezier(.22,1,.36,1)" }} />
-        </div>
 
         {/* header */}
         <header style={{ position: "absolute", left: 0, right: 0, top: 0, height: 88, display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", padding: "0 88px" }}>
@@ -421,6 +422,11 @@ export default function RetailDeckDemo() {
             </span>
           </span>
         </footer>
+      </div>
+
+      {/* progress line, across the whole window */}
+      <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: 3 * STAGE.scale, background: "rgba(223,221,214,0.6)" }}>
+        <div style={{ height: "100%", width: `${((index + (data ? step / 8 : 0)) / 32) * 100}%`, background: C.accent, transition: "width .7s cubic-bezier(.22,1,.36,1)" }} />
       </div>
 
       <Cursor t={t} keys={KEYS} />

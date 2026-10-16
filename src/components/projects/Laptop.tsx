@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Lock } from "lucide-react";
 
 /** Every demo is laid out on this canvas (browser bar included) and scaled to the screen. */
-export const CANVAS = { w: 1024, h: 640, bar: 34 };
+export const CANVAS = { w: 1104, h: 640, bar: 34 };
 
 /** A laptop keyboard, row by row, as key widths (1 = a letter key). Each row adds up to 14.5. */
 const ROWS = [
@@ -31,7 +31,7 @@ const NOTCH = "radial-gradient(6% 2% at 50% 100%, transparent 96%, #000 100%)";
  * A white laptop in perspective: the display leans back a little over a
  * keyboard base seen from just above, with its keys, trackpad and front edge.
  * Lengths are in cqw so it keeps its shape at any size. The demo inside is
- * drawn at a fixed 1024×640 and scaled to the screen, so it looks the same on
+ * drawn at a fixed 1104×640 and scaled to the screen, so it looks the same on
  * every display.
  */
 export default function Laptop({
@@ -60,13 +60,17 @@ export default function Laptop({
       <div className="relative pb-[32%]" style={{ perspective: "800cqw", perspectiveOrigin: "50% calc(100% - 53.4cqw)" }}>
         <div className="relative" style={{ transformStyle: "preserve-3d" }}>
           {/* Lid: white bezel round the screen, its curved bottom edge showing the lid's thickness.
-              It is as wide as the base; the screen keeps its size, so the side bezels take the rest. */}
+              It is as wide as the base. */}
           <div
-            className="relative rounded-[20px] border-b-[3px] border-[#d3d6dc] bg-[linear-gradient(155deg,#ffffff_0%,#f3f4f7_50%,#e2e4ea_100%)] px-[4.9%] py-[2.05%] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.07),inset_0_2px_0_rgba(255,255,255,0.95),0_50px_100px_-50px_rgba(229,9,20,0.55)]"
+            className="relative rounded-[20px] border-b-[3px] border-[#d3d6dc] bg-[linear-gradient(155deg,#ffffff_0%,#f3f4f7_50%,#e2e4ea_100%)] px-[1.4%] py-[2.05%] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.07),inset_0_2px_0_rgba(255,255,255,0.95),0_50px_100px_-50px_rgba(229,9,20,0.55)]"
             style={{ transformOrigin: "50% 100%", transform: "rotateX(4deg)" }}
           >
             <span aria-hidden className="absolute left-1/2 top-[0.75%] h-[6px] w-[6px] -translate-x-1/2 rounded-full bg-[#2b2d33] ring-2 ring-[#d9dbe1]" />
-            <div ref={screenRef} className="relative aspect-[16/10] overflow-hidden rounded-[6px] bg-black ring-1 ring-black/15">
+            <div
+              ref={screenRef}
+              className="relative overflow-hidden rounded-[6px] bg-black ring-1 ring-black/15"
+              style={{ aspectRatio: `${CANVAS.w} / ${CANVAS.h}` }}
+            >
               {scale > 0 && (
                 <div
                   aria-hidden

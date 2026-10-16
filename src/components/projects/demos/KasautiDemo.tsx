@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { CANVAS } from "../Laptop";
 import { countUp, Cursor, inr, Loop, useLoop, type CursorKey } from "../kit";
 
 /* mplads-risk-monitor-web.vercel.app: the national overview (18th Lok Sabha),
@@ -28,16 +29,18 @@ const TICKER = [
   ["Construction Teenshed at Trimurti dham, Gram Panchayat Umri,", "BHIND · ₹9.95 L"],
 ];
 
+/* The nav and the table's right-hand columns are laid out from the right edge. */
+const W = CANVAS.w;
 const KEYS: CursorKey[] = [
   [0, 520, 360],
   [2200, 600, 400],
   [4000, 640, 300],
-  [4700, 506, 46, 1], // Projects
-  [5200, 506, 46],
+  [4700, W - 518, 46, 1], // Projects
+  [5200, W - 518, 46],
   [6400, 300, 450],
-  [7800, 640, 440],
-  [8700, 788, 412, 1], // Escalate
-  [9200, 788, 412],
+  [7800, W - 384, 440],
+  [8700, W - 236, 412, 1], // Escalate
+  [9200, W - 236, 412],
   [10200, 380, 170],
 ];
 

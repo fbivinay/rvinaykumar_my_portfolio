@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Bot, MapPin } from "lucide-react";
+import { CANVAS } from "../Laptop";
 import { Cursor, Loop, Streamed, tokenize, typed, useLoop, type CursorKey } from "../kit";
 
 /* The demo site (sju-chatbot.vercel.app) with the real widget flow:
@@ -40,21 +41,23 @@ const ANSWER = tokenize(
     "  - At least **50% aggregate marks** across all optional subjects at the degree level (including English and Languages)."
 );
 
+/* The widget and its launcher sit at the bottom right, so their keys are measured from the right edge. */
+const W = CANVAS.w;
 const KEYS: CursorKey[] = [
-  [0, 560, 320],
-  [1300, 950, 578, 1], // open the widget
-  [2400, 950, 578],
-  [3300, 923, 402, 1], // Postgraduate
-  [3700, 923, 402],
-  [4300, 790, 524, 1], // search box
-  [5000, 790, 524],
-  [5500, 790, 480, 1], // M.Sc. Big Data Analytics
-  [5900, 790, 480],
-  [6600, 790, 524, 1], // ask a question
-  [9500, 790, 524],
-  [9800, 978, 524, 1], // send
-  [10400, 978, 524],
-  [11600, 880, 420],
+  [0, W / 2 + 48, 320],
+  [1300, W - 74, 578, 1], // open the widget
+  [2400, W - 74, 578],
+  [3300, W - 101, 402, 1], // Postgraduate
+  [3700, W - 101, 402],
+  [4300, W - 234, 524, 1], // search box
+  [5000, W - 234, 524],
+  [5500, W - 234, 480, 1], // M.Sc. Big Data Analytics
+  [5900, W - 234, 480],
+  [6600, W - 234, 524, 1], // ask a question
+  [9500, W - 234, 524],
+  [9800, W - 46, 524, 1], // send
+  [10400, W - 46, 524],
+  [11600, W - 144, 420],
 ];
 
 const appear = { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.3 } };

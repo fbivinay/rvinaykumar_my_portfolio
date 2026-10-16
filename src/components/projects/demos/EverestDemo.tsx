@@ -5,6 +5,7 @@ import {
   ChevronDown, ClipboardCheck, Eye, Factory, FlaskConical, ImagePlus, Landmark, LayoutGrid, Lightbulb,
   Package, Plus, Recycle, Search, Settings, ShoppingCart, SlidersHorizontal, SquarePen, Truck, UserCog, Users, X,
 } from "lucide-react";
+import { CANVAS } from "../Laptop";
 import { countUp, Cursor, Loop, Streamed, tokenize, typed, useLoop, type CursorKey } from "../kit";
 
 /* everest-manufacturing-dashboard.vercel.app: one-click demo sign-in as the
@@ -70,20 +71,22 @@ const REPLY = tokenize(
     "- **ORD-2661** for Welspun Home: 1,500 m of Dark Indigo Denim, deadline was today, 16 Oct 2026 (Status: In quality check)"
 );
 
+/* The sign-in roles are centred in the right half; Ask Everest sits at the bottom right. */
+const W = CANVAS.w;
 const KEYS: CursorKey[] = [
   [0, 420, 300],
-  [1200, 624, 486, 1], // demo sign-in: Owner
-  [2000, 624, 486],
+  [1200, W * 0.75 - 144, 486, 1], // demo sign-in: Owner
+  [2000, W * 0.75 - 144, 486],
   [2800, 560, 330],
   [5300, 520, 300],
   [5900, 70, 119, 1], // Orders
   [6400, 70, 119],
   [7400, 600, 470],
   [8200, 640, 520],
-  [8700, 982, 564, 1], // Ask Everest
-  [9200, 982, 564],
-  [9900, 820, 410, 1], // starter question
-  [10500, 820, 410],
+  [8700, W - 42, 564, 1], // Ask Everest
+  [9200, W - 42, 564],
+  [9900, W - 204, 410, 1], // starter question
+  [10500, W - 204, 410],
   [11500, 560, 300],
 ];
 
