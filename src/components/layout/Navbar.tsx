@@ -17,7 +17,14 @@ const externalLinks = [
   { href: "https://github.com/fbivinay", label: "GitHub" },
 ];
 
-export default function Navbar({ onOpenPalette }: { onOpenPalette: () => void }) {
+export default function Navbar({
+  onOpenPalette,
+  showName,
+}: {
+  onOpenPalette: () => void;
+  /** The name links back to the landing slide, so it is hidden while that slide shows. */
+  showName: boolean;
+}) {
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -46,6 +53,20 @@ export default function Navbar({ onOpenPalette }: { onOpenPalette: () => void })
             : "border-transparent bg-transparent"
         )}
       >
+        {/* Name: back to the landing slide */}
+        <a
+          href="#top"
+          aria-label="Back to the start"
+          aria-hidden={!showName}
+          tabIndex={showName ? 0 : -1}
+          className={cn(
+            "col-start-1 hidden justify-self-start text-sm font-semibold tracking-wide text-ink transition-[color,opacity] duration-500 hover:text-accent sm:block",
+            !showName && "pointer-events-none opacity-0"
+          )}
+        >
+          {profile.name}
+        </a>
+
         {/* Desktop links, centred */}
         <ul className="col-start-2 hidden items-center gap-6 lg:flex">
           {navLinks.map((l) => (

@@ -16,6 +16,7 @@ import { scrollToId } from "@/lib/utils";
 export default function Home() {
   const [started, setStarted] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [slide, setSlide] = useState("top");
 
   const onLoaderDone = useCallback(() => setStarted(true), []);
 
@@ -42,12 +43,12 @@ export default function Home() {
       <SmoothScroll />
       <CustomCursor />
       <ScrollProgress />
-      <Navbar onOpenPalette={() => setPaletteOpen(true)} />
+      <Navbar onOpenPalette={() => setPaletteOpen(true)} showName={slide !== "top"} />
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
 
       <main id="main">
         {/* Full-screen slides: hero → projects → skills; normal scrolling after */}
-        <Deck started={started} />
+        <Deck started={started} onSlideChange={setSlide} />
         <Experience />
         <Credentials />
         <Contact />

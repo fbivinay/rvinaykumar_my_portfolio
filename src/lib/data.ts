@@ -48,27 +48,23 @@ export const profile = {
   siteUrl: "https://rvinaykumar-my-portfolio.vercel.app",
 } as const;
 
-/* ── Skills (exactly the Skills section of R_Vinay_Kumar_Resume.pdf) ── */
+/* ── Skills (the resume's Skills section, trimmed to the owner's chosen list) ── */
 export type SkillGroup = { label: string; items: string[] };
 export const skillGroups: SkillGroup[] = [
   {
     label: "Languages & Databases",
-    items: ["Python", "R", "SQL", "JavaScript", "TypeScript", "PostgreSQL", "MySQL", "MongoDB", "Supabase", "Redis"],
+    items: ["Python", "R", "SQL", "PostgreSQL", "Supabase", "Redis"],
   },
   {
     label: "ML, GenAI & Agentic AI",
     items: [
-      "Machine Learning", "Deep Learning", "LLMs", "Scikit-learn", "Clustering",
-      "Feature Engineering", "Sentence Transformers", "RAG", "Vector Search", "AI Agents", "MCP",
-      "Prompt Engineering", "Claude & Gemini APIs",
+      "Machine Learning", "Deep Learning", "LLMs", "Feature Engineering", "RAG", "Vector Search",
+      "AI Agents", "MCP", "Prompt Engineering", "Claude APIs", "Gemini APIs",
     ],
   },
   {
     label: "Big Data, Cloud & DevOps",
-    items: [
-      "Apache Spark (Structured Streaming)", "PySpark", "Kafka", "Databricks", "Hadoop", "AWS (EC2, S3)",
-      "Azure", "Docker", "Kubernetes", "Helm", "Terraform", "GitHub Actions", "Vercel", "Git",
-    ],
+    items: ["Apache Spark", "Databricks", "Hadoop", "AWS", "Azure", "Docker", "Kubernetes", "GitHub Actions", "Vercel"],
   },
   {
     label: "Statistics & Econometrics",
@@ -89,10 +85,9 @@ export const skillGroups: SkillGroup[] = [
 
 /** Flat list for the rotating skill sphere (a subset of the groups above) */
 export const sphereSkills = [
-  "Python", "R", "SQL", "PostgreSQL", "MongoDB", "Machine Learning", "Deep Learning",
-  "LLMs", "Scikit-learn", "RAG", "AI Agents", "MCP", "Apache Spark", "PySpark",
-  "Kafka", "Databricks", "AWS", "Docker", "Kubernetes", "Pandas", "NumPy", "Power BI",
-  "Tableau", "FastAPI", "React", "Next.js",
+  "Python", "R", "SQL", "PostgreSQL", "Machine Learning", "Deep Learning", "LLMs", "RAG",
+  "AI Agents", "MCP", "Apache Spark", "Databricks", "AWS", "Docker", "Kubernetes",
+  "Pandas", "NumPy", "Power BI", "Tableau", "FastAPI", "React", "Next.js",
 ];
 
 /* ── Experience (LinkedIn Positions.csv, titles reconciled with resume) ── */

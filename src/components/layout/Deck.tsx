@@ -24,9 +24,17 @@ const ANCHORS: Record<string, string> = { top: "top", projects: featuredProjects
 
 const TURN = 38; // degrees between neighbouring slides on the wheel
 const DURATION = 1000; // ms per turn
-const QUIET = 200; // ms without wheel events that ends a scroll gesture
-const TRAVEL = 30; // px a gesture has to scroll before it turns a slide
+const COOLDOWN = 650; // ms before the next turn may start (it can overlap the end of this one)
+const QUIET = 200; // ms without wheel events that starts a fresh scroll
+const TRAVEL = 25; // px a push has to scroll before it turns a slide
+const FRESH = 400; // ms a fresh scroll may take to reach TRAVEL before it has to be speeding up
 const ease = [0.76, 0, 0.24, 1] as const;
+
+/** Mean of the last n values. */
+const avg = (a: number[], n: number) => {
+  const t = a.slice(-n);
+  return t.reduce((x, y) => x + y, 0) / t.length;
+};
 
 const wheel: Variants = {
   enter: (dir: number) => ({ rotate: -dir * TURN, opacity: 0 }),
@@ -39,22 +47,33 @@ const fade: Variants = {
   exit: { opacity: 0, transition: { duration: 0.3 } },
 };
 
-export default function Deck({ started }: { started: boolean }) {
+export default function Deck({ started, onSlideChange }: { started: boolean; onSlideChange?: (key: string) => void }) {
   const reduced = usePrefersReducedMotion();
   const [expanded, setExpanded] = useState(false);
   const [view, setView] = useState({ key: "top", dir: 1 });
   const keys = ORDER.filter((k) => (expanded ? k !== "more" : !SECOND.includes(k) && k !== "more-github"));
 
   // Listeners read the latest state through this ref instead of re-binding.
-  const live = useRef({ keys, key: view.key, lock: 0, gesture: { last: -Infinity, sum: 0, spent: false } });
+  const live = useRef({
+    keys,
+    key: view.key,
+    started,
+    lock: 0,
+    pending: undefined as ReturnType<typeof setTimeout> | undefined,
+    // the current stream of wheel events (a pause starts a new one)
+    wheel: { deltas: [] as number[], last: -Infinity, start: 0, owner: null as "deck" | "page" | null, travel: 0, turned: false },
+  });
   useEffect(() => {
     live.current.keys = keys;
     live.current.key = view.key;
+    live.current.started = started;
   });
+  useEffect(() => onSlideChange?.(view.key), [view.key, onSlideChange]);
 
   /** Turn to a slide; `instant` swaps it with no animation (it is off-screen anyway). */
   const go = useCallback((to: string, instant = false) => {
-    live.current.lock = performance.now() + DURATION;
+    clearTimeout(live.current.pending);
+    live.current.lock = performance.now() + COOLDOWN;
     setView((v) =>
       v.key === to ? v : { key: to, dir: instant ? 0 : Math.sign(ORDER.indexOf(to) - ORDER.indexOf(v.key)) }
     );
@@ -65,34 +84,58 @@ export default function Deck({ started }: { started: boolean }) {
     const atTop = () => window.scrollY <= 1;
     const target = (d: number) => s.keys[s.keys.indexOf(s.key) + d];
 
-    /* One scroll gesture turns at most one slide. A gesture is every wheel event
-       up to a QUIET pause, so trackpad inertia (which can run for seconds after the
-       fingers lift) never turns a second slide. A gesture that starts mid-turn, or
-       while the page itself is scrolling, never turns one. */
+    /** Turn one slide now, or as soon as the last turn's cooldown ends. */
+    const turn = (d: number) => {
+      const wait = s.lock - performance.now();
+      if (wait <= 0) return go(target(d));
+      clearTimeout(s.pending);
+      s.pending = setTimeout(() => {
+        const to = target(d);
+        if (to) go(to);
+      }, wait);
+    };
+
+    /* One push of the wheel or trackpad turns one slide. Each event is weighed
+       against the ones before it: a push speeds up, trackpad inertia only slows
+       down. The stream that turned a slide is ignored until it clearly dies down,
+       so its inertia can't turn a second one; after that the next push turns the
+       next slide straight away, pause or no pause. */
     const onWheel = (e: WheelEvent) => {
-      const g = s.gesture;
-      if (e.timeStamp - g.last > QUIET) {
-        g.sum = 0;
-        g.spent = performance.now() < s.lock;
-      }
-      g.last = e.timeStamp;
-      if (e.ctrlKey) return; // pinch-zoom
-      if (!atTop()) {
-        g.spent = true; // the page is scrolling: this gesture belongs to it
+      const w = s.wheel;
+      const px = e.deltaY * (e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? window.innerHeight : 1);
+      if (e.timeStamp - w.last > QUIET) Object.assign(w, { deltas: [], start: e.timeStamp, owner: null, travel: 0, turned: false });
+      w.last = e.timeStamp;
+      w.deltas.push(Math.abs(px));
+      if (w.deltas.length > 150) w.deltas.shift();
+      if (!s.started) {
+        // the intro is still playing: keep everything still behind it
+        e.preventDefault();
+        e.stopPropagation();
         return;
       }
-      const px = e.deltaY * (e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? window.innerHeight : 1);
       const d = Math.sign(px);
-      if (!d) return;
+      if (e.ctrlKey || !d) return; // ctrl: pinch-zoom
+      const end = avg(w.deltas, 10);
+      const mid = avg(w.deltas, 70);
+      const pushing = (!w.turned && e.timeStamp - w.start < FRESH) || end > mid * 1.1;
+      if (w.owner && end < mid * 0.6) w.owner = null; // the push that owned this stream has died down
+      if (!atTop()) {
+        w.owner = "page"; // the page is scrolling
+        return;
+      }
+      if (w.owner === "page") return;
       const to = target(d);
-      if (!to && !g.spent) return; // past either end of the deck: let the page scroll
+      if (!to && !w.owner && pushing && performance.now() >= s.lock) {
+        w.owner = "page"; // a fresh push past either end of the deck: let the page scroll
+        return;
+      }
       e.preventDefault();
       e.stopPropagation(); // keep Lenis from scrolling underneath the deck
-      if (g.spent || !to) return;
-      g.sum = Math.sign(g.sum) === d ? g.sum + px : px; // a change of direction starts the count again
-      if (Math.abs(g.sum) < TRAVEL) return;
-      g.spent = true;
-      go(to);
+      if (w.owner || !to || !pushing) return;
+      w.travel = Math.sign(w.travel) === d ? w.travel + px : px; // a change of direction starts the count again
+      if (Math.abs(w.travel) < TRAVEL) return;
+      Object.assign(w, { owner: "deck", travel: 0, turned: true });
+      turn(d);
     };
 
     const onKey = (e: KeyboardEvent) => {
@@ -107,7 +150,7 @@ export default function Deck({ started }: { started: boolean }) {
       const to = d && target(d);
       if (!to) return;
       e.preventDefault();
-      if (performance.now() >= s.lock) go(to);
+      if (s.started && performance.now() >= s.lock) go(to);
     };
 
     let startY = 0;
@@ -122,7 +165,7 @@ export default function Deck({ started }: { started: boolean }) {
       const to = target(Math.sign(dy));
       if (!dy || !to) return;
       e.preventDefault();
-      if (!swiped && Math.abs(dy) > 40 && performance.now() >= s.lock) {
+      if (!swiped && s.started && Math.abs(dy) > 40 && performance.now() >= s.lock) {
         swiped = true;
         go(to);
       }
@@ -163,6 +206,7 @@ export default function Deck({ started }: { started: boolean }) {
     document.addEventListener("click", onClick);
     window.addEventListener("navigate", onNavigate);
     return () => {
+      clearTimeout(s.pending);
       window.removeEventListener("wheel", onWheel, { capture: true });
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("touchstart", onTouchStart);
