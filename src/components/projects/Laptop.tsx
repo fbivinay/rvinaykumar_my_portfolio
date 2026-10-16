@@ -11,19 +11,28 @@ const ROWS = [
   [1.5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // esc, F1–F12, power
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.5], // ` 1–0 - = delete
   [1.5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // tab Q–] \
-  [1.8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.7], // caps A–' return
-  [2.3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2.2], // shift Z–/ shift
-  [1, 1, 1, 1.25, 5, 1.25, 1], // fn ctrl opt cmd space cmd opt (arrows follow)
+  [1.75, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.75], // caps A–' return
+  [2.25, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2.25], // shift Z–/ shift
+  [1, 1, 1, 1.25, 5, 1.25, 1, 3], // fn ctrl opt cmd space cmd opt, then the arrow keys
 ];
-const KEY = "rounded-[4px] bg-[linear-gradient(180deg,#3b3e45,#26282d)] shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_2px_0_#101114]";
+const GAP = "0.9%"; // between keys, as a share of the keyboard's width
+/** Flex size of a key `w` units wide, so that keys line up on one pitch in every row. */
+const keyFlex = (w: number) => `0 0 calc(${w} * (100% + ${GAP}) / 14.5 - ${GAP})`;
+const KEY =
+  "rounded-[0.35cqw] bg-[linear-gradient(180deg,#3d4047,#26282d)] shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_0.25cqw_0_#111215,0_0_0_1px_rgba(0,0,0,0.22)]";
 
-const BASE_TILT = 76; // degrees the keyboard deck lies back from the screen plane
+const BASE_TILT = 70; // degrees the base lies back from the screen plane
+const THICK = "2.6cqw"; // the base's thickness (cqw = 1% of the laptop's width)
+const CORNERS = "rounded-b-[3.5cqw]"; // the base's front corners, seen from above
+/** The scoop in the middle of the front edge, for lifting the lid. */
+const NOTCH = "radial-gradient(6% 2% at 50% 100%, transparent 96%, #000 100%)";
 
 /**
  * A white laptop in perspective: the display leans back a little over a
- * keyboard deck seen from just above, with its keys, trackpad and front edge.
- * The demo inside is drawn at a fixed 1024×640 and scaled to the screen, so
- * it looks the same on every display.
+ * keyboard base seen from just above, with its keys, trackpad and front edge.
+ * Lengths are in cqw so it keeps its shape at any size. The demo inside is
+ * drawn at a fixed 1024×640 and scaled to the screen, so it looks the same on
+ * every display.
  */
 export default function Laptop({
   url,
@@ -46,85 +55,100 @@ export default function Laptop({
   }, []);
 
   return (
-    // The eye sits above the hinge, so the keyboard deck is seen from just above
-    <div role="img" aria-label={label} className="relative w-full pb-[19%]" style={{ perspective: "5000px", perspectiveOrigin: "50% 45%" }}>
-      {/* Shadows on the desk: a soft spread, and a tight one right under the front edge */}
-      <div aria-hidden className="absolute inset-x-[1%] bottom-0 h-[8%] rounded-[50%] bg-black/70 blur-3xl" />
-      <div aria-hidden className="absolute inset-x-[7%] bottom-[2.6%] h-[1.6%] rounded-[50%] bg-black/90 blur-[7px]" />
-
-      <div className="relative" style={{ transformStyle: "preserve-3d" }}>
-        {/* Lid: white bezel round the screen, its bottom edge showing the lid's thickness */}
-        <div
-          className="relative rounded-[20px] border-b-[3px] border-[#d3d6dc] bg-[linear-gradient(155deg,#ffffff_0%,#f3f4f7_50%,#e2e4ea_100%)] p-[1.5%] pb-[2.2%] pt-[2.2%] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.07),inset_0_2px_0_rgba(255,255,255,0.95),0_50px_100px_-50px_rgba(229,9,20,0.55)]"
-          style={{ transformOrigin: "50% 100%", transform: "rotateX(4deg)" }}
-        >
-          <span aria-hidden className="absolute left-1/2 top-[0.75%] h-[6px] w-[6px] -translate-x-1/2 rounded-full bg-[#2b2d33] ring-2 ring-[#d9dbe1]" />
-          <div ref={screenRef} className="relative aspect-[16/10] overflow-hidden rounded-[6px] bg-black ring-1 ring-black/15">
-            {scale > 0 && (
-              <div
-                aria-hidden
-                className="absolute left-0 top-0 origin-top-left"
-                style={{ width: CANVAS.w, height: CANVAS.h, transform: `scale(${scale})` }}
-              >
-                {/* Browser chrome */}
-                <div className="flex items-center gap-4 bg-[#1f1f1f] px-4" style={{ height: CANVAS.bar }}>
-                  <span className="flex gap-[7px]">
-                    <i className="h-3 w-3 rounded-full bg-[#ff5f57]" />
-                    <i className="h-3 w-3 rounded-full bg-[#febc2e]" />
-                    <i className="h-3 w-3 rounded-full bg-[#28c840]" />
-                  </span>
-                  <span className="mx-auto flex h-[22px] w-[440px] items-center justify-center gap-1.5 rounded-md bg-[#2c2c2c] text-[12px] text-white/70">
-                    <Lock size={10} />
-                    {url}
-                  </span>
-                  <span className="w-[52px]" />
-                </div>
-                {/* The apps are light: reset the portfolio's white ink for everything inside */}
-                <div className="relative overflow-hidden bg-white text-[#111]" style={{ height: CANVAS.h - CANVAS.bar }}>
-                  {children}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Keyboard deck, hinged to the bottom of the lid and seen from above */}
-        <div
-          aria-hidden
-          className="absolute left-[-0.5%] right-[-0.5%] top-full h-[80%] rounded-b-[28px] rounded-t-[6px] bg-[linear-gradient(180deg,#a9aeb6_0%,#dcdfe4_3%,#f6f7f9_14%,#fbfbfc_55%,#eceef1_100%)] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]"
-          style={{ transformOrigin: "50% 0%", transform: `rotateX(${BASE_TILT}deg)`, transformStyle: "preserve-3d" }}
-        >
-          {/* Keyboard, set into a shallow well */}
-          <div className="absolute inset-x-[6.5%] top-[7%] flex h-[47%] flex-col gap-[2.2%] rounded-[10px] bg-[#c4c8cf] p-[0.9%] shadow-[inset_0_3px_6px_rgba(0,0,0,0.28),inset_0_-1px_0_rgba(255,255,255,0.6)]">
-            {ROWS.map((row, r) => (
-              <div key={r} className="flex min-h-0 gap-[0.55%]" style={{ flex: r === 0 ? 0.62 : 1 }}>
-                {row.map((w, k) => (
-                  <span key={k} className={KEY} style={{ flexGrow: w, flexBasis: 0 }} />
-                ))}
-                {r === ROWS.length - 1 && (
-                  // arrow keys: left, up over down, right
-                  <span className="flex gap-[3%]" style={{ flexGrow: 3, flexBasis: 0 }}>
-                    <span className={`${KEY} flex-1 self-end`} style={{ height: "50%" }} />
-                    <span className="flex flex-1 flex-col gap-[6%]">
-                      <span className={`${KEY} flex-1`} />
-                      <span className={`${KEY} flex-1`} />
-                    </span>
-                    <span className={`${KEY} flex-1 self-end`} style={{ height: "50%" }} />
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Trackpad, flush with the deck */}
-          <div className="absolute left-1/2 top-[60%] h-[33%] w-[42%] -translate-x-1/2 rounded-[14px] bg-[linear-gradient(180deg,#eef0f3,#e3e5e9)] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.09),inset_0_2px_3px_rgba(0,0,0,0.07),0_1px_0_rgba(255,255,255,0.9)]" />
-
-          {/* Front edge: the base's thickness, standing upright at the near side */}
+    <div role="img" aria-label={label} className="w-full [container-type:inline-size]">
+      {/* The eye sits above the hinge, so the base is seen from above */}
+      <div className="relative pb-[32%]" style={{ perspective: "800cqw", perspectiveOrigin: "50% 45%" }}>
+        <div className="relative" style={{ transformStyle: "preserve-3d" }}>
+          {/* Lid: white bezel round the screen, squared off where it meets the hinge */}
           <div
-            className="absolute inset-x-[0.4%] top-full h-[6%] rounded-b-[22px] bg-[linear-gradient(180deg,#ffffff_0%,#e4e6ea_35%,#c3c7ce_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,1)]"
-            style={{ transformOrigin: "50% 0%", transform: `rotateX(${-BASE_TILT}deg)` }}
+            className="relative rounded-t-[20px] bg-[linear-gradient(155deg,#ffffff_0%,#f3f4f7_50%,#e2e4ea_100%)] p-[1.5%] pb-[2.2%] pt-[2.2%] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.07),inset_0_2px_0_rgba(255,255,255,0.95),0_50px_100px_-50px_rgba(229,9,20,0.55)]"
+            style={{ transformOrigin: "50% 100%", transform: "rotateX(4deg)" }}
           >
-            <span className="absolute left-1/2 top-0 h-[42%] w-[13%] -translate-x-1/2 rounded-b-[12px] bg-[linear-gradient(180deg,#c9ccd2,#dcdfe3)]" />
+            <span aria-hidden className="absolute left-1/2 top-[0.75%] h-[6px] w-[6px] -translate-x-1/2 rounded-full bg-[#2b2d33] ring-2 ring-[#d9dbe1]" />
+            <div ref={screenRef} className="relative aspect-[16/10] overflow-hidden rounded-[6px] bg-black ring-1 ring-black/15">
+              {scale > 0 && (
+                <div
+                  aria-hidden
+                  className="absolute left-0 top-0 origin-top-left"
+                  style={{ width: CANVAS.w, height: CANVAS.h, transform: `scale(${scale})` }}
+                >
+                  {/* Browser chrome */}
+                  <div className="flex items-center gap-4 bg-[#1f1f1f] px-4" style={{ height: CANVAS.bar }}>
+                    <span className="flex gap-[7px]">
+                      <i className="h-3 w-3 rounded-full bg-[#ff5f57]" />
+                      <i className="h-3 w-3 rounded-full bg-[#febc2e]" />
+                      <i className="h-3 w-3 rounded-full bg-[#28c840]" />
+                    </span>
+                    <span className="mx-auto flex h-[22px] w-[440px] items-center justify-center gap-1.5 rounded-md bg-[#2c2c2c] text-[12px] text-white/70">
+                      <Lock size={10} />
+                      {url}
+                    </span>
+                    <span className="w-[52px]" />
+                  </div>
+                  {/* The apps are light: reset the portfolio's white ink for everything inside */}
+                  <div className="relative overflow-hidden bg-white text-[#111]" style={{ height: CANVAS.h - CANVAS.bar }}>
+                    {children}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Base, hinged to the bottom of the lid and as deep as a real one */}
+          <div
+            aria-hidden
+            className="absolute inset-x-0 top-full h-[109%]"
+            style={{ transformOrigin: "50% 0%", transform: `rotateX(${BASE_TILT}deg)`, transformStyle: "preserve-3d" }}
+          >
+            {/* Shadow on the desk, under the base */}
+            <div
+              className={`absolute inset-x-[0.5%] bottom-0 top-[3%] ${CORNERS}`}
+              style={{
+                transform: `translateZ(calc(-1 * ${THICK} - 0.1cqw))`,
+                boxShadow: "0 0.6cqw 1.6cqw 0.3cqw rgba(0,0,0,0.7), 0 5cqw 9cqw rgba(0,0,0,0.45)",
+              }}
+            />
+            {/* The chassis' underside: a copy of the deck sunk by the base's thickness, so its
+                rim shows below the deck as one unbroken front edge and rounded corners. Drawn
+                a little wider, as perspective shrinks it, so its sides line up with the deck's. */}
+            <div
+              className={`absolute inset-x-[-0.45%] inset-y-0 ${CORNERS} bg-[linear-gradient(180deg,#e8eaed_89%,#d2d5da_94%,#b3b8c0_98.4%,#8e939b_100%)]`}
+              style={{ transform: `translateZ(calc(-1 * ${THICK}))` }}
+            />
+            {/* Deck */}
+            <div
+              className={`absolute inset-0 ${CORNERS} bg-[linear-gradient(180deg,#cfd2d8_3%,#eceef1_9%,#f9f9fb_20%,#fbfbfc_60%,#eef0f2_100%)] shadow-[inset_0_-0.35cqw_0_rgba(255,255,255,0.95),inset_0_0_0_1px_rgba(0,0,0,0.05)]`}
+              style={{ maskImage: NOTCH, WebkitMaskImage: NOTCH }}
+            >
+              {/* Hinge, where the lid comes out of the base */}
+              <div className="absolute inset-x-[2%] top-0 h-[3%] rounded-b-[0.6cqw] bg-[linear-gradient(180deg,#53575e,#9a9fa7_55%,#80858d)]" />
+
+              {/* Keyboard */}
+              <div className="absolute inset-x-[6.5%] top-[6%] flex h-[46%] flex-col gap-[2.3%]">
+                {ROWS.map((row, r) => (
+                  <div key={r} className="flex min-h-0" style={{ flex: r === 0 ? 0.7 : 1, gap: GAP }}>
+                    {row.map((w, k) =>
+                      r === ROWS.length - 1 && k === row.length - 1 ? (
+                        // arrow keys: left, up over down, right
+                        <span key={k} className="flex gap-[4.5%]" style={{ flex: keyFlex(w) }}>
+                          <span className={`${KEY} h-[44%] flex-1 self-end`} />
+                          <span className="flex flex-1 flex-col gap-[12%]">
+                            <span className={`${KEY} flex-1`} />
+                            <span className={`${KEY} flex-1`} />
+                          </span>
+                          <span className={`${KEY} h-[44%] flex-1 self-end`} />
+                        </span>
+                      ) : (
+                        <span key={k} className={KEY} style={{ flex: keyFlex(w) }} />
+                      ),
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Trackpad */}
+              <div className="absolute left-1/2 top-[56.5%] h-[37.5%] w-[44%] -translate-x-1/2 rounded-[1.4cqw] bg-[linear-gradient(180deg,#e2e5e9,#d8dbe0)] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.17),inset_0_0.3cqw_0.6cqw_rgba(0,0,0,0.1),0_1px_0_rgba(255,255,255,0.9)]" />
+            </div>
           </div>
         </div>
       </div>

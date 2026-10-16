@@ -37,7 +37,7 @@ export function ProjectSlide({ p, id }: { p: Project; id?: string }) {
     <section id={id} aria-label={p.title} className="flex h-full flex-col pb-8 pt-24">
       <FitToScreen>
         <div className="mx-auto grid w-full max-w-[1480px] items-center gap-10 px-6 lg:grid-cols-[1.6fr_1fr] lg:px-12 xl:gap-14">
-          <motion.div {...enter(0.25)} className="mx-auto w-full max-w-[calc((100svh-190px)*1.2)]">
+          <motion.div {...enter(0.25)} className="mx-auto w-full max-w-[calc(100svh-160px)]">
             <Laptop url={new URL(p.live).host} label={`${p.title} in use: a recording of the live app`}>
               <Demo />
             </Laptop>
