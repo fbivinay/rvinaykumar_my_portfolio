@@ -7,6 +7,7 @@ import { ChevronDown, Download, FolderOpen, Send } from "lucide-react";
 import { profile } from "@/lib/data";
 import { usePrefersReducedMotion, useTypewriter } from "@/lib/hooks";
 import MagneticButton from "@/components/ui/MagneticButton";
+import HeroFlow from "@/components/sections/HeroFlow";
 
 /* ── Ambient particle field + mouse-reactive spotlight (one canvas) ── */
 function ParticleField() {
@@ -111,6 +112,8 @@ function NameReveal({ text, delay = 0 }: { text: string; delay?: number }) {
 /** First slide of the deck; the deck draws the grid stage behind it. */
 export default function Hero({ started }: { started: boolean }) {
   const typed = useTypewriter(profile.roles);
+  const nameRef = useRef<HTMLHeadingElement>(null);
+  const photoRef = useRef<HTMLDivElement>(null);
 
   return (
     <section
@@ -131,9 +134,12 @@ export default function Hero({ started }: { started: boolean }) {
 
       {started && (
         <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-10 px-6 py-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:py-0">
+          {/* Living data diagram in the room beside the name (wide screens) */}
+          <HeroFlow name={nameRef} photo={photoRef} />
+
           {/* ── LEFT: text column ── */}
           <div className="order-2 text-center lg:order-1 lg:text-left">
-            <h1 className="text-balance text-5xl font-extrabold leading-[1.02] tracking-tighter text-ink sm:text-7xl lg:text-8xl">
+            <h1 ref={nameRef} className="text-balance text-5xl font-extrabold leading-[1.02] tracking-tighter text-ink sm:text-7xl lg:text-8xl">
               <NameReveal text="R " delay={0.25} />
               <span className="text-accent drop-shadow-[0_0_40px_rgba(229,9,20,0.45)]">
                 <NameReveal text="Vinay" delay={0.31} />
@@ -196,6 +202,7 @@ export default function Hero({ started }: { started: boolean }) {
             className="order-1 flex justify-center lg:order-2 lg:justify-end"
           >
             <motion.div
+              ref={photoRef}
               animate={{ y: [0, -12, 0] }}
               transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
               className="group relative w-[230px] sm:w-[290px] lg:w-full lg:max-w-[380px]"
@@ -232,7 +239,7 @@ export default function Hero({ started }: { started: boolean }) {
                     </span>
                     Now Streaming
                   </p>
-                  <p className="mt-1 text-sm font-bold text-white">Data Science · AI / ML</p>
+                  <p className="mt-1 text-sm font-bold text-white">Data Analyst · AI / ML</p>
                 </div>
               </div>
             </motion.div>
