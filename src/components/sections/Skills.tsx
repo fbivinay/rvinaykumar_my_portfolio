@@ -62,12 +62,48 @@ function SkillSphere() {
       targetVY = 0.0032;
     };
 
+    // Front labels glow red. The glow is drawn once per label into a sprite at twice the
+    // largest size: blurring text on every frame made the sphere the page's heaviest thing.
+    const glows = new Map<string, HTMLCanvasElement>();
+    const glow = (label: string) => {
+      let c = glows.get(label);
+      if (c) return c;
+      c = document.createElement("canvas");
+      const g = c.getContext("2d")!;
+      const font = "700 30px Inter, sans-serif";
+      g.font = font;
+      c.width = Math.ceil(g.measureText(label).width) + 60;
+      c.height = 90;
+      g.font = font; // resizing the canvas resets its context
+      g.textAlign = "center";
+      g.textBaseline = "middle";
+      g.fillStyle = "#E50914";
+      g.shadowColor = "rgba(229,9,20,0.6)";
+      g.shadowBlur = 28;
+      g.fillText(label, c.width / 2, c.height / 2);
+      glows.set(label, c);
+      return c;
+    };
+
+    // Only spin while it can be seen: the slide stays mounted while the page scrolls on below it
+    let visible = true;
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      if (visible && !raf) raf = requestAnimationFrame(draw);
+    });
+    io.observe(canvas);
+
     const draw = () => {
+      if (!visible) return void (raf = 0);
       velX += (targetVX - velX) * 0.04;
       velY += (targetVY - velY) * 0.04;
       rotX += velX;
       rotY += velY;
       ctx.clearRect(0, 0, W, H);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.shadowBlur = 0;
+      let font = "";
 
       const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
       const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
@@ -87,17 +123,14 @@ function SkillSphere() {
       for (const p of projected) {
         const depth = (p.z + 1) / 2; // 0 back → 1 front
         const size = 9 + depth * 6;
-        ctx.font = `${depth > 0.8 ? "700" : "500"} ${size}px Inter, sans-serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
         if (depth > 0.82) {
-          ctx.fillStyle = "#E50914";
-          ctx.shadowColor = "rgba(229,9,20,0.6)";
-          ctx.shadowBlur = 14;
-        } else {
-          ctx.fillStyle = `rgba(255,255,255,${0.14 + depth * 0.6})`;
-          ctx.shadowBlur = 0;
+          const c = glow(p.label), k = size / 30;
+          ctx.drawImage(c, p.sx - (c.width * k) / 2, p.sy - (c.height * k) / 2, c.width * k, c.height * k);
+          continue;
         }
+        const next = `${depth > 0.8 ? "700" : "500"} ${Math.round(size)}px Inter, sans-serif`;
+        if (next !== font) ctx.font = font = next; // setting a font is costly; sizes only step up as labels sort
+        ctx.fillStyle = `rgba(255,255,255,${0.14 + depth * 0.6})`;
         ctx.fillText(p.label, p.sx, p.sy);
       }
       raf = requestAnimationFrame(draw);
@@ -110,6 +143,7 @@ function SkillSphere() {
     canvas.addEventListener("mouseleave", onLeave);
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
       window.removeEventListener("resize", resize);
       canvas.removeEventListener("mousemove", onMove);
       canvas.removeEventListener("mouseleave", onLeave);

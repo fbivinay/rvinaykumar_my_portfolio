@@ -24,7 +24,7 @@ export default function MagneticButton({
         variant === "solid" &&
           "bg-accent text-white shadow-glow hover:bg-[#f6121d]",
         variant === "ghost" &&
-          "border border-line bg-white/5 text-ink backdrop-blur-md hover:border-accent/60 hover:bg-white/10",
+          "border border-line bg-white/5 text-ink hover:border-accent/60 hover:bg-white/10",
         className
       )}
       {...rest}

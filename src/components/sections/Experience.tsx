@@ -50,8 +50,8 @@ export default function Experience() {
                 className="absolute -left-[7px] top-8 h-3.5 w-3.5 rounded-full border-2 border-accent bg-base shadow-glow sm:left-1/2 sm:-translate-x-1/2"
               />
               <motion.article
-                initial={reduced ? false : { opacity: 0, x: left ? -slide : slide, scale: 0.96, filter: "blur(10px)" }}
-                whileInView={{ opacity: 1, x: 0, scale: 1, filter: "blur(0px)" }}
+                initial={reduced ? false : { opacity: 0, x: left ? -slide : slide, scale: 0.96 }}
+                whileInView={{ opacity: 1, x: 0, scale: 1 }}
                 viewport={{ once: false, margin: "0px 0px -8% 0px" }}
                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                 className={`card-lift ml-6 rounded-xl border border-line bg-surface p-6 sm:ml-0 sm:w-[calc(50%-2.5rem)] ${

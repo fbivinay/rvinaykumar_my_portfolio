@@ -24,9 +24,10 @@ const DEMOS: Record<string, React.ComponentType> = {
 };
 
 const ease = [0.22, 1, 0.36, 1] as const;
+/** Rise and fade in: opacity and transform only, so it runs on the GPU. */
 const enter = (delay: number) => ({
-  initial: { opacity: 0, y: 18, filter: "blur(8px)" },
-  animate: { opacity: 1, y: 0, filter: "blur(0px)" },
+  initial: { opacity: 0, y: 18 },
+  animate: { opacity: 1, y: 0 },
   transition: { duration: 0.7, delay, ease },
 });
 
@@ -78,7 +79,7 @@ export function ProjectSlide({ p, id }: { p: Project; id?: string }) {
                 href={p.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-md border border-line bg-white/5 px-5 py-2.5 text-sm font-semibold text-ink backdrop-blur transition-colors hover:border-accent/60"
+                className="inline-flex items-center gap-2 rounded-md border border-line bg-white/5 px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:border-accent/60"
               >
                 <Github size={14} aria-hidden /> Source Code
               </a>
@@ -98,7 +99,7 @@ export function MoreSlide({ onMore, href }: { onMore?: () => void; href?: string
     "inline-flex items-center gap-3 rounded-md bg-accent px-10 py-5 text-lg font-semibold text-white shadow-glow transition-colors duration-300 will-change-transform hover:bg-[#f6121d]";
   return (
     <section aria-label="More projects" className="relative flex h-full items-center justify-center">
-      <div aria-hidden className="animate-drift absolute inset-0 m-auto h-[50vh] w-[50vw] rounded-full bg-accent/10 blur-[120px]" />
+      <div aria-hidden className="animate-drift absolute inset-0 m-auto h-[50vh] w-[50vw] bg-[radial-gradient(closest-side,rgba(229,9,20,0.1),transparent)]" />
       <motion.div {...enter(0.3)} className="relative">
         {href ? (
           <a ref={link} href={href} target="_blank" rel="noopener noreferrer" data-cursor="hover" className={cls}>

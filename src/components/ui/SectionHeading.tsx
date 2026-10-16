@@ -5,8 +5,9 @@ import { usePrefersReducedMotion } from "@/lib/hooks";
 
 /**
  * Row header in the Netflix idiom: red eyebrow + display title + rule.
- * Orchestrated entrance — eyebrow tracks in, title rises out of blur,
- * the red rule draws itself across, blurb fades last.
+ * Orchestrated entrance — eyebrow slides in, title rises and fades up,
+ * the red rule draws itself across, blurb fades last. Opacity and
+ * transform only, so it never costs the main thread a layout.
  */
 export default function SectionHeading({
   eyebrow,
@@ -47,8 +48,8 @@ export default function SectionHeading({
     >
       <motion.p
         variants={{
-          hidden: { opacity: 0, x: -28, letterSpacing: "0.55em" },
-          show: { opacity: 1, x: 0, letterSpacing: "0.28em", transition: { duration: 0.7, ease } },
+          hidden: { opacity: 0, x: -28 },
+          show: { opacity: 1, x: 0, transition: { duration: 0.7, ease } },
         }}
         className="eyebrow mb-3"
       >
@@ -58,8 +59,8 @@ export default function SectionHeading({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <motion.h2
           variants={{
-            hidden: { opacity: 0, y: 44, filter: "blur(12px)" },
-            show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.8, ease } },
+            hidden: { opacity: 0, y: 44 },
+            show: { opacity: 1, y: 0, transition: { duration: 0.8, ease } },
           }}
           className="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl lg:text-5xl"
         >

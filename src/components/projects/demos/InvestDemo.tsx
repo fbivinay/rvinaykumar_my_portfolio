@@ -55,6 +55,28 @@ const KEYS: CursorKey[] = [
 const lakh = (v: number) => `₹${v.toFixed(1).replace(/\.0$/, "")} lakh`;
 const fall = (v: number) => (Math.round(v) === 0 ? "0%" : `−${Math.round(v)}%`);
 
+/** The shaded area and the four lines, drawn once on the CPU into a picture (at 2x, for sharpness).
+    Drawn as SVG paths, the first frame that showed them stalled the GPU for over 100 ms while it
+    built what it needs to draw them; a picture of the same geometry costs nothing. */
+let linesPicture: string | undefined;
+const picture = () => {
+  if (linesPicture) return linesPicture;
+  const c = document.createElement("canvas");
+  c.width = 614 * 2;
+  c.height = 447 * 2;
+  const g = c.getContext("2d", { willReadFrequently: true })!; // a CPU-backed canvas
+  g.scale(2, 2);
+  g.fillStyle = "rgba(8,122,82,0.08)"; // GREEN at 8%
+  g.fill(new Path2D(`M72,409${path(SERIES.max).replace("M", "L")}L390,409Z`));
+  g.lineJoin = "round";
+  for (const l of [...LINES].reverse()) {
+    g.strokeStyle = l.color;
+    g.lineWidth = l.width;
+    g.stroke(new Path2D(path(SERIES[l.key])));
+  }
+  return (linesPicture = c.toDataURL());
+};
+
 export default function InvestDemo() {
   const t = useLoop(LENGTH, 12500);
   const perf = t >= 7100;
@@ -140,10 +162,7 @@ export default function InvestDemo() {
                 <line x1="72" x2="390" y1="382" y2="382" stroke="rgb(102,114,107)" />
                 <text x="384" y="374" textAnchor="end" fontSize="11" fill="#5d6862">₹10 lakh put in</text>
                 <g clipPath="url(#ii-reveal)">
-                  <path d={`M72,409${path(SERIES.max).replace("M", "L")}L390,409Z`} fill={GREEN} fillOpacity="0.08" />
-                  {[...LINES].reverse().map((l) => (
-                    <path key={l.key} d={path(SERIES[l.key])} fill="none" stroke={l.color} strokeWidth={l.width} strokeLinejoin="round" />
-                  ))}
+                  <image href={picture()} x="0" y="0" width="614" height="447" />
                 </g>
                 {LINES.map((l, i) => (
                   <motion.g key={l.key} initial={false} animate={{ opacity: t >= 4300 + i * 120 ? 1 : 0 }}>

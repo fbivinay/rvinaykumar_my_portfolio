@@ -39,7 +39,7 @@ export default function Home() {
 
   return (
     <>
-      <Loader onDone={onLoaderDone} />
+      <Loader onReady={onLoaderDone} />
       <SmoothScroll />
       <CustomCursor />
       <ScrollProgress />

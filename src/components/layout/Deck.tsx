@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { featuredProjects, moreProjects, profile } from "@/lib/data";
 import { usePrefersReducedMotion } from "@/lib/hooks";
+import { smoothScrollTo } from "@/components/fx/SmoothScroll";
 import Hero from "@/components/sections/Hero";
 import Skills from "@/components/sections/Skills";
 import { MoreSlide, ProjectSlide } from "@/components/sections/Projects";
@@ -176,10 +177,11 @@ export default function Deck({ started, onSlideChange }: { started: boolean; onS
       const slide = ANCHORS[hash.slice(1)];
       if (slide) {
         go(slide);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        smoothScrollTo(0);
       } else {
         go("skills", true);
-        document.querySelector(hash)?.scrollIntoView({ behavior: "smooth" });
+        const el = document.querySelector<HTMLElement>(hash);
+        if (el) smoothScrollTo(el);
       }
     };
     const onClick = (e: MouseEvent) => {

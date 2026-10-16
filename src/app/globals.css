@@ -21,6 +21,11 @@ html {
   scroll-padding-top: 88px;
 }
 
+/* While Lenis drives the scroll it eases every step itself; native smoothing on top makes the two fight */
+html.lenis {
+  scroll-behavior: auto;
+}
+
 body {
   background: var(--bg);
   color: var(--ink);
@@ -109,6 +114,17 @@ html.custom-cursor * {
   50% { transform: translate(4%, -6%) scale(1.08); }
 }
 .animate-drift { animation: drift 14s ease-in-out infinite; }
+
+/* Intro loader: CSS animations of transform and opacity, which run on the
+   compositor, so they never stutter while the page warms up behind the curtain */
+@keyframes loader-rise { from { transform: scaleY(0); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes loader-beam { from { transform: translateX(-120%); } to { transform: translateX(220%); } }
+@keyframes loader-letter { from { transform: translateY(110%); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes loader-line { from { transform: translateY(6px); opacity: 0; } to { transform: none; opacity: 1; } }
+.loader-rise { animation: loader-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.loader-beam { animation: loader-beam 1.1s ease-in-out 0.5s both; }
+.loader-letter { display: inline-block; animation: loader-letter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.loader-line { display: inline-block; animation: loader-line 0.3s ease-out both; }
 
 /* Shared-element style card hover lift */
 .card-lift {

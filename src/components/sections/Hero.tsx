@@ -51,11 +51,14 @@ function ParticleField() {
 
     const draw = () => {
       ctx.clearRect(0, 0, w, h);
-      const grad = ctx.createRadialGradient(mx, my, 0, mx, my, 380);
-      grad.addColorStop(0, "rgba(229,9,20,0.10)");
-      grad.addColorStop(1, "rgba(229,9,20,0)");
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, w, h);
+      if (mx > -380) {
+        // the spotlight only covers its own circle, so only that square is filled
+        const grad = ctx.createRadialGradient(mx, my, 0, mx, my, 380);
+        grad.addColorStop(0, "rgba(229,9,20,0.10)");
+        grad.addColorStop(1, "rgba(229,9,20,0)");
+        ctx.fillStyle = grad;
+        ctx.fillRect(mx - 380, my - 380, 760, 760);
+      }
 
       for (const p of dots) {
         p.x += p.vx;
@@ -97,8 +100,8 @@ function NameReveal({ text, delay = 0 }: { text: string; delay?: number }) {
         <motion.span
           key={i}
           aria-hidden
-          initial={{ opacity: 0, y: 40, rotateX: 60, filter: "blur(8px)" }}
-          animate={{ opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" }}
+          initial={{ opacity: 0, y: 40, rotateX: 60 }}
+          animate={{ opacity: 1, y: 0, rotateX: 0 }}
           transition={{ delay: delay + i * 0.03, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="inline-block will-change-transform"
           style={{ transformOrigin: "bottom" }}
@@ -110,9 +113,19 @@ function NameReveal({ text, delay = 0 }: { text: string; delay?: number }) {
   );
 }
 
+/** The rotating role line: its own component, so each keystroke re-renders only this text. */
+function Typed() {
+  const typed = useTypewriter(profile.roles);
+  return (
+    <>
+      {typed}
+      <span className="ml-0.5 inline-block h-5 w-[2px] animate-pulse bg-accent align-middle" aria-hidden />
+    </>
+  );
+}
+
 /** First slide of the deck; the deck draws the grid stage behind it. */
 export default function Hero({ started }: { started: boolean }) {
-  const typed = useTypewriter(profile.roles);
   const nameRef = useRef<HTMLHeadingElement>(null);
   const photoRef = useRef<HTMLDivElement>(null);
 
@@ -125,7 +138,7 @@ export default function Hero({ started }: { started: boolean }) {
       {/* Layered cinematic backdrop */}
       <div
         aria-hidden
-        className="animate-drift absolute -top-1/3 left-1/2 h-[80vh] w-[80vw] -translate-x-1/2 rounded-full bg-accent/10 blur-[140px]"
+        className="animate-drift absolute -top-1/3 left-1/2 h-[80vh] w-[80vw] -translate-x-1/2 bg-[radial-gradient(closest-side,rgba(229,9,20,0.1)_45%,transparent)]"
       />
       <ParticleField />
       <div
@@ -142,7 +155,7 @@ export default function Hero({ started }: { started: boolean }) {
           <div className="order-2 text-center lg:order-1 lg:text-left">
             <h1 ref={nameRef} className="text-balance text-5xl font-extrabold leading-[1.02] tracking-tighter text-ink sm:text-7xl lg:text-8xl">
               <NameReveal text="R " delay={0.25} />
-              <span className="text-accent drop-shadow-[0_0_40px_rgba(229,9,20,0.45)]">
+              <span className="text-accent [text-shadow:0_0_40px_rgba(229,9,20,0.45)]">
                 <NameReveal text="Vinay" delay={0.31} />
               </span>
               <br />
@@ -157,8 +170,7 @@ export default function Hero({ started }: { started: boolean }) {
               className="mt-6 min-h-[1.75rem] text-lg font-semibold text-ink sm:text-xl"
               aria-live="polite"
             >
-              {typed}
-              <span className="ml-0.5 inline-block h-5 w-[2px] animate-pulse bg-accent align-middle" aria-hidden />
+              <Typed />
             </motion.p>
 
             <motion.p
@@ -211,7 +223,7 @@ export default function Hero({ started }: { started: boolean }) {
               {/* red glow behind the poster */}
               <div
                 aria-hidden
-                className="absolute -inset-4 rounded-[2rem] bg-accent/25 blur-3xl transition-opacity duration-500 group-hover:opacity-100 lg:opacity-70"
+                className="absolute -inset-4 rounded-[2rem] shadow-[0_0_128px_rgba(229,9,20,0.25)] transition-opacity duration-500 group-hover:opacity-100 lg:opacity-70"
               />
               <div className="relative aspect-[4/5] overflow-hidden rounded-2xl ring-1 ring-white/10 shadow-[0_40px_90px_-25px_rgba(229,9,20,0.55)]">
                 <Image
