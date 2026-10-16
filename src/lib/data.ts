@@ -268,7 +268,7 @@ export const achievements = [
     icon: "medal",
     title: "National-Level Table Tennis Player",
     detail:
-      "Represented Mangalore University at the South Zone National Table Tennis Championships — competitive discipline, resilience, and teamwork at the national level.",
+      "Represented Mangalore University at the South Zone National Table Tennis Championships, VIT, Vellore, Tamil Nadu.",
   },
   {
     icon: "scroll",
