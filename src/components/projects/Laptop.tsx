@@ -22,7 +22,6 @@ const KEY =
   "rounded-[0.35cqw] bg-[linear-gradient(180deg,#3d4047,#26282d)] shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_0.25cqw_0_#111215,0_0_0_1px_rgba(0,0,0,0.22)]";
 
 const BASE_TILT = 70; // degrees the base lies back from the screen plane
-const LID_SCALE = 0.93; // the lid's size against the base, so the screen doesn't dwarf the keyboard
 const THICK = "2.6cqw"; // the base's thickness (cqw = 1% of the laptop's width)
 const CORNERS = "rounded-b-[3.5cqw]"; // the base's front corners, seen from above
 /** The scoop in the middle of the front edge, for lifting the lid. */
@@ -57,17 +56,14 @@ export default function Laptop({
 
   return (
     <div role="img" aria-label={label} className="w-full [container-type:inline-size]">
-      {/* The eye sits above the hinge, so the base is seen from above. The lid shrinks
-          towards its bottom edge, so the room it leaves above (of its ~65cqw height) is taken back. */}
-      <div
-        className="relative pb-[32%]"
-        style={{ perspective: "800cqw", perspectiveOrigin: "50% 45%", marginTop: `calc(${LID_SCALE} * 65cqw - 65cqw)` }}
-      >
+      {/* The eye sits 21.4cqw above the hinge (which is 32cqw up from the bottom), so the base is seen from above */}
+      <div className="relative pb-[32%]" style={{ perspective: "800cqw", perspectiveOrigin: "50% calc(100% - 53.4cqw)" }}>
         <div className="relative" style={{ transformStyle: "preserve-3d" }}>
-          {/* Lid: white bezel round the screen, its curved bottom edge showing the lid's thickness */}
+          {/* Lid: white bezel round the screen, its curved bottom edge showing the lid's thickness.
+              It is as wide as the base; the screen keeps its size, so the side bezels take the rest. */}
           <div
-            className="relative rounded-[20px] border-b-[3px] border-[#d3d6dc] bg-[linear-gradient(155deg,#ffffff_0%,#f3f4f7_50%,#e2e4ea_100%)] p-[1.5%] pb-[2.2%] pt-[2.2%] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.07),inset_0_2px_0_rgba(255,255,255,0.95),0_50px_100px_-50px_rgba(229,9,20,0.55)]"
-            style={{ transformOrigin: "50% 100%", transform: `rotateX(4deg) scale(${LID_SCALE})` }}
+            className="relative rounded-[20px] border-b-[3px] border-[#d3d6dc] bg-[linear-gradient(155deg,#ffffff_0%,#f3f4f7_50%,#e2e4ea_100%)] px-[4.9%] py-[2.05%] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.07),inset_0_2px_0_rgba(255,255,255,0.95),0_50px_100px_-50px_rgba(229,9,20,0.55)]"
+            style={{ transformOrigin: "50% 100%", transform: "rotateX(4deg)" }}
           >
             <span aria-hidden className="absolute left-1/2 top-[0.75%] h-[6px] w-[6px] -translate-x-1/2 rounded-full bg-[#2b2d33] ring-2 ring-[#d9dbe1]" />
             <div ref={screenRef} className="relative aspect-[16/10] overflow-hidden rounded-[6px] bg-black ring-1 ring-black/15">
@@ -102,7 +98,7 @@ export default function Laptop({
           {/* Base, hinged to the bottom of the lid and as deep as a real one */}
           <div
             aria-hidden
-            className="absolute inset-x-0 top-full h-[109%]"
+            className="absolute inset-x-0 top-full h-[71.3cqw]"
             style={{ transformOrigin: "50% 0%", transform: `rotateX(${BASE_TILT}deg)`, transformStyle: "preserve-3d" }}
           >
             {/* Shadow on the desk, under the base */}
