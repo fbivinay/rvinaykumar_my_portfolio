@@ -10,8 +10,8 @@ import { usePrefersReducedMotion } from "@/lib/hooks";
    no text, and nothing runs while the hero is off screen. */
 
 const W = 340, H = 200; // design units; the drawing is scaled to fit its room
-const ink = (a: number) => `rgba(255,255,255,${a})`;
-const red = (a: number) => `rgba(229,9,20,${a})`;
+export const ink = (a: number) => `rgba(255,255,255,${a})`;
+export const red = (a: number) => `rgba(229,9,20,${a})`;
 
 type Pt = [number, number];
 type Curve = [Pt, Pt, Pt, Pt]; // a cubic Bézier: start, two controls, end
@@ -21,8 +21,8 @@ const at = ([a, b, c, d]: Curve, t: number): Pt => {
   const k = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
   return [k[0] * a[0] + k[1] * b[0] + k[2] * c[0] + k[3] * d[0], k[0] * a[1] + k[1] * b[1] + k[2] * c[1] + k[3] * d[1]];
 };
-const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
-const ease = (p: number) => 1 - Math.pow(1 - p, 3);
+export const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
+export const ease = (p: number) => 1 - Math.pow(1 - p, 3);
 const rnd = (a: number, b: number) => a + Math.random() * (b - a);
 
 /* Layout, in design units */
@@ -39,7 +39,7 @@ const PIPES = [...IN, TO_DB, TO_A, TO_M];
 const LAYERS = [3, 4, 2]; // the model's network
 const node = (l: number, i: number): Pt => [M.x + 14 + l * 18, M.y + M.h / 2 + (i - (LAYERS[l] - 1) / 2) * 15];
 /** An element's layout position inside `root`, through any transformed or filtered ancestors on the way. */
-const offset = (el: HTMLElement, root: HTMLElement) => {
+export const offset = (el: HTMLElement, root: HTMLElement) => {
   let x = 0, y = 0;
   for (let e: HTMLElement | null = el; e && e !== root; e = e.offsetParent as HTMLElement | null) (x += e.offsetLeft), (y += e.offsetTop);
   return { x, y };
@@ -57,6 +57,7 @@ export default function HeroFlow({ name, photo }: { name: RefObject<HTMLElement 
     const wide = window.matchMedia("(min-width: 1024px)");
     let fit = { s: 1, ox: 0, oy: 0 };
     let shown = false;
+    let still = false; // reduced motion: the held frame is repainted after every resize (resizing clears a canvas)
 
     /** Fits the canvas between the name and the photo, level with the name; hides it when there's no room. */
     const place = () => {
@@ -73,6 +74,7 @@ export default function HeroFlow({ name, photo }: { name: RefObject<HTMLElement 
       canvas.height = Math.round(h * dpr);
       const s = Math.min(w / W, h / H);
       fit = { s: s * dpr, ox: ((w - W * s) / 2) * dpr, oy: ((h - H * s) / 2) * dpr };
+      if (still) draw(0, 1);
     };
 
     /* ── The workflow ── */
@@ -376,6 +378,7 @@ export default function HeroFlow({ name, photo }: { name: RefObject<HTMLElement 
     if (reduced) {
       for (let t = 0; t < 6000; t += 16) step(16); // a moment into the workflow, held still
       draw(0, 1);
+      still = true;
       return () => (ro.disconnect(), wide.removeEventListener("change", place));
     }
     let raf = 0, last = 0, start = 0;

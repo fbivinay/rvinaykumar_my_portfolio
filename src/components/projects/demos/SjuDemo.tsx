@@ -32,6 +32,17 @@ const LEVELS = [
 ];
 const CARDS = ["📘 Programme Info", "💰 Fees", "✅ Eligibility", "📅 Important Dates", "📝 How to Apply", "🎯 Selection Process"];
 
+const CREDENTIALS = ["NAAC A++ Accredited", "India's 1st Public-Private University · RUSA 2.0", "UGC College of Excellence", "Est. 1882"];
+/** THE WEEK–Hansa Research Survey 2026 (theweek.in, 25 May 2026), score 323 in each table. The site
+    also lists 18th among Private & Deemed universities (All India); THE WEEK's published table for
+    that category is empty, so it is left out until it can be checked. */
+const RANKS = [
+  ["49", "Multidisciplinary Universities", "All India"],
+  ["19", "Multidisciplinary Universities", "South Zone"],
+  ["8", "Pvt & Deemed Multidisciplinary", "South Zone"],
+  ["4", "Pvt & Deemed Multidisciplinary", "Karnataka"],
+];
+
 const QUESTION = "What is the eligibility for M.Sc. Big Data Analytics?";
 const ANSWER = tokenize(
   "To be eligible for the **MSc in Big Data Analytics** at St Joseph's University, candidates must meet the following criteria:\n" +
@@ -134,16 +145,40 @@ export default function SjuDemo() {
           </span>
         </div>
       </div>
+      {/* Hero, laid out clear of the chat widget that opens over the right of the page */}
       <div
-        className="relative flex h-[398px] flex-col items-center pt-9 text-center"
+        className="relative flex h-[398px] flex-col items-center justify-center pb-2 pr-[372px] text-center"
         style={{ background: "#0b2240", backgroundImage: "radial-gradient(rgba(255,255,255,0.06) 9px, transparent 10px)", backgroundSize: "34px 34px" }}
       >
-        <p className="text-[12px] tracking-[0.3em] text-white/70">ST JOSEPH&apos;S UNIVERSITY, BENGALURU</p>
-        <p className="mt-5 text-[62px] font-black leading-[0.98] tracking-tight text-white">
+        <p className="text-[11px] tracking-[0.3em] text-white/70">ST JOSEPH&apos;S UNIVERSITY, BENGALURU</p>
+        <p className="mt-3 text-[48px] font-black leading-[0.98] tracking-tight text-white">
           PROUD TO BE <span className="text-[#f0c93d]">RANKED</span>
           <br />
           <span className="text-[#f0c93d]">AMONG</span> INDIA&apos;S BEST!
         </p>
+        <p className="mt-3 text-[13px] italic text-white/80">Fide et Labore — Academic Excellence · Social Concern · Character Formation</p>
+        <div className="mt-3 flex flex-wrap justify-center gap-1.5">
+          {CREDENTIALS.map((c) => (
+            <span key={c} className="rounded-full border border-white/15 bg-white/[0.07] px-2.5 py-[3px] text-[10.5px] font-semibold text-[#f0c93d]">
+              {c}
+            </span>
+          ))}
+        </div>
+        <div className="mt-4 grid grid-cols-4 gap-2.5">
+          {RANKS.map(([n, what, where]) => (
+            <div key={what + where} className="w-[152px] rounded-[10px] border border-white/[0.12] bg-white/[0.06] px-2 pb-2.5 pt-2">
+              <p className="text-[30px] font-extrabold leading-none text-[#f0c93d]">
+                {n}
+                <sup className="ml-0.5 text-[13px]">th</sup>
+              </p>
+              <p className="mt-1.5 text-[10px] leading-snug text-white/80">
+                {what}
+                <br />({where})
+              </p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-2.5 text-[9.5px] text-white/55">Following rank declared by &quot;The Week Magazine University Ranking 2026&quot;</p>
       </div>
 
       {/* Launcher */}

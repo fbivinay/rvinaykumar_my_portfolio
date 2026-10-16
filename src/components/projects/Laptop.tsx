@@ -60,11 +60,9 @@ export default function Laptop({
       <div className="relative pb-[32%]" style={{ perspective: "800cqw", perspectiveOrigin: "50% calc(100% - 53.4cqw)" }}>
         <div className="relative" style={{ transformStyle: "preserve-3d" }}>
           {/* Lid: white bezel round the screen, its curved bottom edge showing the lid's thickness.
-              It is as wide as the base. */}
-          <div
-            className="relative rounded-[20px] border-b-[3px] border-[#d3d6dc] bg-[linear-gradient(155deg,#ffffff_0%,#f3f4f7_50%,#e2e4ea_100%)] px-[1.4%] py-[2.05%] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.07),inset_0_2px_0_rgba(255,255,255,0.95),0_50px_100px_-50px_rgba(229,9,20,0.55)]"
-            style={{ transformOrigin: "50% 100%", transform: "rotateX(4deg)" }}
-          >
+              It is as wide as the base, and faces the viewer square-on: tilting it, even by a few
+              degrees, resamples the screen and halves the sharpness of the recording. */}
+          <div className="relative rounded-[20px] border-b-[3px] border-[#d3d6dc] bg-[linear-gradient(155deg,#ffffff_0%,#f3f4f7_50%,#e2e4ea_100%)] px-[1.4%] py-[2.05%] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.07),inset_0_2px_0_rgba(255,255,255,0.95),0_50px_100px_-50px_rgba(229,9,20,0.55)]">
             <span aria-hidden className="absolute left-1/2 top-[0.75%] h-[6px] w-[6px] -translate-x-1/2 rounded-full bg-[#2b2d33] ring-2 ring-[#d9dbe1]" />
             <div
               ref={screenRef}
@@ -72,11 +70,8 @@ export default function Laptop({
               style={{ aspectRatio: `${CANVAS.w} / ${CANVAS.h}` }}
             >
               {scale > 0 && (
-                <div
-                  aria-hidden
-                  className="absolute left-0 top-0 origin-top-left"
-                  style={{ width: CANVAS.w, height: CANVAS.h, transform: `scale(${scale})` }}
-                >
+                // zoom rather than a scale transform: the demo is laid out at its final size, so text is drawn crisp
+                <div aria-hidden className="absolute left-0 top-0" style={{ width: CANVAS.w, height: CANVAS.h, zoom: scale }}>
                   {/* Browser chrome */}
                   <div className="flex items-center gap-4 bg-[#1f1f1f] px-4" style={{ height: CANVAS.bar }}>
                     <span className="flex gap-[7px]">

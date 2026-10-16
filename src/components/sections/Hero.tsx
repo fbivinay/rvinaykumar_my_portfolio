@@ -8,6 +8,7 @@ import { profile } from "@/lib/data";
 import { usePrefersReducedMotion, useTypewriter } from "@/lib/hooks";
 import MagneticButton from "@/components/ui/MagneticButton";
 import HeroFlow from "@/components/sections/HeroFlow";
+import HeroSides from "@/components/sections/HeroSides";
 
 /* ── Ambient particle field + mouse-reactive spotlight (one canvas) ── */
 function ParticleField() {
@@ -246,6 +247,9 @@ export default function Hero({ started }: { started: boolean }) {
           </motion.div>
         </div>
       )}
+
+      {/* The data work and the decisions, in the margins either side (wide screens) */}
+      {started && <HeroSides name={nameRef} photo={photoRef} />}
 
       {/* Scroll indicator */}
       <motion.a
